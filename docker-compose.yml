@@ -23,10 +23,12 @@ services:
       - user-service-db
     ports:
       - "4000:4000"
+      - "9090:9090"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://user-service-db:5432/db
       SPRING_DATASOURCE_USERNAME: admin_user
       SPRING_DATASOURCE_PASSWORD: password
+      GRPC_PORT: 9090
     networks:
       - swens
 
