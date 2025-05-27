@@ -13,7 +13,7 @@ RUN mvn dependency:go-offline -B
 COPY src ./src
 
 # Build jar, skip tests for faster build (remove -DskipTests if you want tests)
-RUN mvn clean package
+RUN mvn clean package -DskipTests
 
 # Stage 2: Run
 FROM openjdk:23-jdk AS runner
