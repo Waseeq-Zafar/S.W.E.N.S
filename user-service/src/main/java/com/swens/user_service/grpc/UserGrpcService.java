@@ -28,10 +28,12 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
         if (user != null) {
             responseBuilder
                     .setName(user.getName())
-                    .setHashedPassword(user.getPassword());
+                    .setHashedPassword(user.getPassword())
+                    .setRole(user.getRole());
         } else {
             responseBuilder.setName("");
             responseBuilder.setHashedPassword("");
+            responseBuilder.setRole("");
         }
 
         responseObserver.onNext(responseBuilder.build());
