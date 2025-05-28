@@ -9,7 +9,7 @@ services:
       POSTGRES_USER: admin_user
       POSTGRES_PASSWORD: password
     ports:
-      - "5000:5432"
+      - "5000:5432"     # <-- If you want to connect to DB from host, else remove this line to hide it
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:
@@ -21,10 +21,9 @@ services:
     container_name: user-service
     depends_on:
       - user-service-db
-    ports:
-      - "4000:4000"
-      - "9090:9090"  # gRPC port
+    # NO ports mapping here - not exposed outside
     environment:
+      SERVER_PORT: 4000
       SPRING_DATASOURCE_URL: jdbc:postgresql://user-service-db:5432/db
       SPRING_DATASOURCE_USERNAME: admin_user
       SPRING_DATASOURCE_PASSWORD: password
@@ -36,14 +35,13 @@ services:
     build:
       context: ./auth-service
     container_name: auth-service
-    ports:
-      - "3000:3000"
+    depends_on:
+      - user-service
+    # NO ports mapping here - not exposed outside
     environment:
       SERVER_PORT: 3000
       GRPC_CLIENT_USERSERVICE_ADDRESS: static://user-service:9090
       JWT_SECRET: vLw4a7v7D1XqXx+MshFwPVmIb7A3DCw2r+VtGMLglWc=
-    depends_on:
-      - user-service
     networks:
       - swens
 
@@ -52,7 +50,7 @@ services:
       context: ./api-gateway
     container_name: api-gateway
     ports:
-      - "8080:8080"
+      - "8080:8080"    # <-- Only API Gateway exposed externally
     environment:
       SERVER_PORT: 8080
       SPRING_PROFILES_ACTIVE: docker
