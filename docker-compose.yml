@@ -28,7 +28,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://user-service-db:5432/db
       SPRING_DATASOURCE_USERNAME: admin_user
       SPRING_DATASOURCE_PASSWORD: password
-      GRPC_SERVER_PORT: 9090   # Correct key for grpc server port
+      GRPC_SERVER_PORT: 9090
     networks:
       - swens
 
@@ -41,8 +41,23 @@ services:
     environment:
       SERVER_PORT: 3000
       GRPC_CLIENT_USERSERVICE_ADDRESS: static://user-service:9090
-      JWT_SECRET: vLw4a7v7D1XqXx+MshFwPVmIb7A3DCw2r+VtGMLglWc=  # Keep base64 if your code decodes
+      JWT_SECRET: vLw4a7v7D1XqXx+MshFwPVmIb7A3DCw2r+VtGMLglWc=
     depends_on:
+      - user-service
+    networks:
+      - swens
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      SERVER_PORT: 8080
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - auth-service
       - user-service
     networks:
       - swens
