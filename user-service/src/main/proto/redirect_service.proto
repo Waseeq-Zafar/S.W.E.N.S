@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.swens.grpc";
+option java_outer_classname = "UserServiceProto";
+
+service UserService {
+  rpc GetUserCredentials (UserRequest) returns (UserResponse);
+}
+
+message UserRequest {
+  string email = 1;
+}
+
+message UserResponse {
+  string name = 1;
+  string hashed_password = 2;
+  string role = 3;
+}

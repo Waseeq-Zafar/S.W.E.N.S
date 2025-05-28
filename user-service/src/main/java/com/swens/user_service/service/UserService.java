@@ -37,8 +37,10 @@ public class UserService {
         Users users = userRepository.findByEmail(email)
                 .orElseThrow(() -> new EmailNotFoundException("User not found with email: " + email));
 
-        return new UserLoginDTO(users.getName(), users.getPassword());
+        return new UserLoginDTO(users.getName(), users.getPassword(), users.getRole());
     }
+
+
 
 
 
