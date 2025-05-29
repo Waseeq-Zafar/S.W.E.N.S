@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package com.swens.events;
+
+option java_package = "com.swens.events";
+option java_outer_classname = "TaskEventProto";
+
+message TaskEvent {
+  string taskId = 1;
+  string taskName = 2;
+  string assignedUserId = 3;
+  string eventType = 4; // e.g., "TASK_CREATED", "TASK_UPDATED"
+  int64 timestamp = 5;  // epoch millis
+}

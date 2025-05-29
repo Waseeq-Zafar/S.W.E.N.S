@@ -45,18 +45,28 @@ services:
     networks:
       - swens
 
-  mongodb:
+  task-mongodb:
     image: mongo:6
-    container_name: mongo
+    container_name: task-mongodb
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin_user
       MONGO_INITDB_ROOT_PASSWORD: password
-    ports:
-      - "27017:27017"
     volumes:
-      - mongodata:/data/db
+      - task_mongodata:/data/db
     networks:
       - swens
+
+  workflow-mongodb:
+    image: mongo:6
+    container_name: workflow-mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin_user
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - workflow_mongodata:/data/db
+    networks:
+      - swens
+
 
   user-service:
     build:
@@ -91,21 +101,43 @@ services:
       context: ./task-service
     container_name: task-service
     depends_on:
-      - mongodb
+      - task-mongodb
       - user-service
       - kafka
       - zookeeper
     environment:
       SERVER_PORT: 6000
       SPRING_PROFILES_ACTIVE: docker
-      SPRING_DATA_MONGODB_URI: mongodb://admin_user:password@mongo:27017
+      SPRING_DATA_MONGODB_URI: mongodb://admin_user:password@task-mongodb:27017
       SPRING_DATA_MONGODB_DATABASE: db
       GRPC_CLIENT_USERSERVICE_ADDRESS: static://user-service:9090
-      
+
       # Kafka config
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     networks:
       - swens
+
+  workflow-service:
+    build:
+      context: ./workflow-service
+    container_name: workflow-service
+    depends_on:
+      - workflow-mongodb
+      - user-service
+      - kafka
+      - zookeeper
+    environment:
+      SERVER_PORT: 7000
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATA_MONGODB_URI: mongodb://admin_user:password@workflow-mongodb:27017
+      SPRING_DATA_MONGODB_DATABASE: db
+      GRPC_CLIENT_USERSERVICE_ADDRESS: static://user-service:9090
+
+      # Kafka config
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    networks:
+      - swens
+    # No ports mapping = NOT exposed to localhost
 
   api-gateway:
     build:
@@ -120,12 +152,14 @@ services:
       - auth-service
       - user-service
       - task-service
+      - workflow-service
     networks:
       - swens
 
 volumes:
   pgdata:
-  mongodata:
+  task_mongodata:
+  workflow_mongodata:
 
 networks:
   swens:
