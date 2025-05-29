@@ -29,10 +29,21 @@ public class KafkaProducer {
         try {
             kafkaTemplate.send("task.created", event.toByteArray());
             log.info("Sent TASK_CREATED event for taskId {}", task.getTaskId());
+
+            // Log all assigned users details:
+            if (task.getAssignedUsers() != null && !task.getAssignedUsers().isEmpty()) {
+                task.getAssignedUsers().forEach(user -> {
+                    log.info("Assigned User: ID = {}, Name = {}", user.getUserId(), user.getUserName());
+                });
+            } else {
+                log.info("No assigned users for taskId {}", task.getTaskId());
+            }
+
         } catch (Exception e) {
             log.error("Error sending TASK_CREATED event: {}", event, e);
         }
     }
+
 
     public void sendTaskUpdatedEvent(Task task) {
         TaskEvent event = TaskEvent.newBuilder()
@@ -46,10 +57,21 @@ public class KafkaProducer {
         try {
             kafkaTemplate.send("task.updated", event.toByteArray());
             log.info("Sent TASK_UPDATED event for taskId {}", task.getTaskId());
+
+            // Log details of all assigned users
+            if (task.getAssignedUsers() != null && !task.getAssignedUsers().isEmpty()) {
+                task.getAssignedUsers().forEach(user ->
+                        log.info("Assigned User - ID: {}, Name: {}", user.getUserId(), user.getUserName())
+                );
+            } else {
+                log.info("No assigned users for taskId {}", task.getTaskId());
+            }
+
         } catch (Exception e) {
             log.error("Error sending TASK_UPDATED event: {}", event, e);
         }
     }
+
 
     private String getFirstAssignedUserId(Task task) {
         if (task.getAssignedUsers() != null && !task.getAssignedUsers().isEmpty()) {
