@@ -9,7 +9,9 @@ public class Task {
     private String taskName;
     private String assignedUserId;
     private String eventType;   // e.g., TASK_CREATED, TASK_UPDATED
+    private String taskStatus;
     private long timestamp;
+
 
     public Task() {
     }
@@ -39,6 +41,10 @@ public class Task {
         return eventType;
     }
 
+    public String getTaskStatus() {
+        return taskStatus;
+    }
+
     public long getTimestamp() {
         return timestamp;
     }
@@ -57,6 +63,10 @@ public class Task {
 
     public void setEventType(String eventType) {
         this.eventType = eventType;
+    }
+
+    public void setTaskStatus(String taskStatus) {
+        this.taskStatus = taskStatus;
     }
 
     public void setTimestamp(long timestamp) {
