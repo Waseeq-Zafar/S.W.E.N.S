@@ -7,6 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 @Component
@@ -24,8 +25,8 @@ public class JwtValidationGatewayFilterFactory extends AbstractGatewayFilterFact
         return (exchange, chain) -> {
             String path = exchange.getRequest().getURI().getPath();
 
-            // Skip JWT validation for signup and login endpoints
-            if (path.startsWith("/users") || path.startsWith("/auth")) {
+            // Skip validation for auth and open endpoints
+            if (path.startsWith("/auth") || path.startsWith("/users")) {
                 return chain.filter(exchange);
             }
 
@@ -36,23 +37,41 @@ public class JwtValidationGatewayFilterFactory extends AbstractGatewayFilterFact
                 return exchange.getResponse().setComplete();
             }
 
+
             return webClient.get()
-                    .uri("/validate")
+                    .uri("/auth/validate")
                     .header(HttpHeaders.AUTHORIZATION, token)
                     .retrieve()
-                    .toBodilessEntity()
-                    .flatMap(response -> {
-                        if (response.getStatusCode().is2xxSuccessful()) {
-                            return chain.filter(exchange);
+                    .bodyToMono(AuthResponse.class)
+                    .flatMap(authResponse -> {
+
+                        if (authResponse != null && authResponse.getRole() != null && !authResponse.getRole().isEmpty()) {
+                            // Add X-ROLE header for downstream filters
+                            ServerWebExchange mutatedExchange = exchange.mutate()
+                                    .request(builder -> builder.header("X-ROLE", authResponse.getRole()))
+                                    .build();
+                            return chain.filter(mutatedExchange);
                         } else {
                             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
                             return exchange.getResponse().setComplete();
                         }
                     })
                     .onErrorResume(e -> {
+                        System.out.println("[JwtValidation] Error validating token: " + e.getMessage());
                         exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
                         return exchange.getResponse().setComplete();
                     });
         };
+    }
+
+    private static class AuthResponse {
+        private String message;
+        private String role;
+
+        public String getMessage() { return message; }
+        public void setMessage(String message) { this.message = message; }
+
+        public String getRole() { return role; }
+        public void setRole(String role) { this.role = role; }
     }
 }

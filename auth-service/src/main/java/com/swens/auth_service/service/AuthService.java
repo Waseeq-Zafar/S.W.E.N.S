@@ -97,4 +97,8 @@ public class AuthService {
             return Optional.empty();
         }
     }
+
+    public String getRole(String token) {
+        return jwtUtil.extractRoleFromToken(token);
+    }
 }

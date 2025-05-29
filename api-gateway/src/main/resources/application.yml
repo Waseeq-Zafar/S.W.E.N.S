@@ -1,5 +1,5 @@
 server:
-  port: 8080  # API Gateway port
+  port: 8080
 
 spring:
   application:
@@ -7,6 +7,8 @@ spring:
 
   cloud:
     gateway:
+      default-filters:
+        - PreserveHostHeader
       routes:
         - id: auth-service
           uri: http://auth-service:3000
@@ -18,8 +20,15 @@ spring:
           predicates:
             - Path=/users/**
 
-      default-filters:
-        - name: JwtValidation
+        - id: task-service
+          uri: http://task-service:6000
+          predicates:
+            - Path=/task/**
+          filters:
+            - name: JwtValidation
+            - name: RoleFilter
+              args:
+                requiredRole: ADMIN
 
 auth:
   service:
