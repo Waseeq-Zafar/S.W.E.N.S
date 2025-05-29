@@ -6,6 +6,7 @@ import com.swens.task_service.dto.TaskUpdateDTO;
 import com.swens.task_service.dto.UserInfoDTO;
 import com.swens.task_service.exception.TaskNotFoundException;
 import com.swens.task_service.grpc.UserServiceGrpcClient;
+import com.swens.task_service.kafka.KafkaProducer;
 import com.swens.task_service.mapper.TaskMapper;
 import com.swens.task_service.model.Task;
 import com.swens.task_service.repository.TaskRepository;
@@ -25,13 +26,15 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
     private final UserServiceGrpcClient userGrpcClient;
+    private final KafkaProducer kafkaProducer;
 
     private final ConcurrentHashMap<String, String> userTaskMap = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, UserInfoDTO> userInfoMap = new ConcurrentHashMap<>();
 
-    public TaskService(TaskRepository taskRepository, UserServiceGrpcClient userServiceGrpcClient) {
+    public TaskService(TaskRepository taskRepository, UserServiceGrpcClient userServiceGrpcClient, KafkaProducer kafkaProducer) {
         this.taskRepository = taskRepository;
         this.userGrpcClient = userServiceGrpcClient;
+        this.kafkaProducer = kafkaProducer;
     }
 
     public List<UserInfoDTO> getUsersByRole(String role) {
@@ -50,6 +53,8 @@ public class TaskService {
         for (Task.AssignedUser user : saved.getAssignedUsers()) {
             userTaskMap.put(user.getUserId(), ASSIGNED);
         }
+
+        kafkaProducer.sendTaskCreatedEvent(saved);
 
         return TaskMapper.toDTO(saved);
     }
@@ -89,6 +94,8 @@ public class TaskService {
                 }
             }
         }
+
+        kafkaProducer.sendTaskUpdatedEvent(updated);
 
         return TaskMapper.toDTO(updated);
     }

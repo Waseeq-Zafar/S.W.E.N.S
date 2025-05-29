@@ -1,6 +1,35 @@
 version: '3.8'
 
 services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.9.1
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - swens
+
+  kafka:
+    image: confluentinc/cp-kafka:7.9.1
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+    networks:
+      - swens
+
   user-service-db:
     image: postgres:15
     container_name: user-service-db
@@ -63,12 +92,17 @@ services:
     depends_on:
       - mongodb
       - user-service
+      - kafka
+      - zookeeper
     environment:
       SERVER_PORT: 6000
       SPRING_PROFILES_ACTIVE: docker
       SPRING_DATA_MONGODB_URI: mongodb://admin_user:password@mongo:27017
       SPRING_DATA_MONGODB_DATABASE: db
       GRPC_CLIENT_USERSERVICE_ADDRESS: static://user-service:9090
+      
+      # Kafka config
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     networks:
       - swens
 
