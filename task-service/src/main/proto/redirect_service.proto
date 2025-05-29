@@ -5,19 +5,9 @@ option java_package = "com.swens.grpc";
 option java_outer_classname = "UserServiceProto";
 
 service UserService {
-  rpc GetUserCredentials (UserRequest) returns (UserResponse);
   rpc GetUsersByRole (RoleRequest) returns (UsersResponse);
 }
 
-message UserRequest {
-  string email = 1;
-}
-
-message UserResponse {
-  string name = 1;
-  string hashed_password = 2;
-  string role = 3;
-}
 
 // Request to get all users by role
 message RoleRequest {

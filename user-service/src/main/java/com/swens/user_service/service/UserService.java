@@ -1,6 +1,7 @@
 package com.swens.user_service.service;
 
 
+import com.swens.user_service.dto.TaskUserDTO;
 import com.swens.user_service.dto.UserLoginDTO;
 import com.swens.user_service.dto.UserRequestDTO;
 import com.swens.user_service.dto.UserResponseDTO;
@@ -11,6 +12,8 @@ import com.swens.user_service.model.Users;
 import com.swens.user_service.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class UserService {
@@ -41,9 +44,16 @@ public class UserService {
     }
 
 
+    public List<TaskUserDTO> getUsersByRole(String role) {
+        List<Users> usersList = userRepository.findByRole(role);
 
-
-
-
-
+        return usersList.stream().map(user -> {
+            TaskUserDTO dto = new TaskUserDTO();
+            dto.setUserId(user.getId());
+            dto.setName(user.getName());
+            dto.setEmail(user.getEmail());
+            dto.setRole(user.getRole());
+            return dto;
+        }).toList();
+    }
 }
