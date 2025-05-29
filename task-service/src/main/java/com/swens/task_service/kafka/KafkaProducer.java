@@ -23,6 +23,7 @@ public class KafkaProducer {
                 .setTaskName(task.getDescription()) // using description as task name
                 .setAssignedUserId(getFirstAssignedUserId(task))
                 .setEventType("TASK_CREATED")
+                .setTaskStatus(task.getStatus())
                 .setTimestamp(System.currentTimeMillis())
                 .build();
 
@@ -51,6 +52,7 @@ public class KafkaProducer {
                 .setTaskName(task.getDescription()) // using description as task name
                 .setAssignedUserId(getFirstAssignedUserId(task))
                 .setEventType("TASK_UPDATED")
+                .setTaskStatus(task.getStatus())
                 .setTimestamp(System.currentTimeMillis())
                 .build();
 

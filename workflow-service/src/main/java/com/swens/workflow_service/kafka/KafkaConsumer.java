@@ -22,12 +22,6 @@ public class KafkaConsumer {
             // Parse protobuf binary data to TaskEvent object
             TaskEvent event = TaskEvent.parseFrom(data);
 
-//            System.out.println("Consumed TaskEvent:");
-//            System.out.println("TaskId: " + event.getTaskId());
-//            System.out.println("TaskName: " + event.getTaskName());
-//            System.out.println("AssignedUserId: " + event.getAssignedUserId());
-//            System.out.println("EventType: " + event.getEventType());
-//            System.out.println("Timestamp: " + event.getTimestamp());
 
             // Map to your internal Task model
             Task task = new Task();
@@ -35,12 +29,13 @@ public class KafkaConsumer {
             task.setTaskName(event.getTaskName());
             task.setAssignedUserId(event.getAssignedUserId());
             task.setEventType(event.getEventType());
+            task.setTaskStatus(event.getTaskStatus());
             task.setTimestamp(event.getTimestamp());
 
             // Since workflowId is not in proto, decide workflowId logic here
             String workflowId = "default-workflow"; // Or your custom logic here
 
-            // Save or update workflow with this task
+            // Save or update the workflow with this task
             workflowService.addOrUpdateWorkflow(workflowId, task);
 
             System.out.println("Consumed and saved task event: " + event.getTaskId());
