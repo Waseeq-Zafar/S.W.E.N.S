@@ -30,6 +30,16 @@ spring:
               args:
                 requiredRole: ADMIN
 
+        - id: workflow-service
+          uri: http://workflow-service:7000
+          predicates:
+            - Path=/workflow/**
+          filters:
+            - name: JwtValidation
+            - name: RoleFilter
+              args:
+                requiredRole: ADMIN
+
 auth:
   service:
     url: http://auth-service:3000
