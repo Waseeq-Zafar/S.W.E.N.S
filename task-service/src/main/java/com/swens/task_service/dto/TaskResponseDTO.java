@@ -11,8 +11,48 @@ public class TaskResponseDTO {
     private List<AssignedUserDTO> assignedUsers;
     private String createdAt;    // changed from Instant to String
     private String updatedAt;    // changed from Instant to String
-
     private String workflowId;  // <-- Added this field
+    private List<String> unavailableUsers;
+
+
+    // Getters
+    public String getStatus() {
+        return status;
+    }
+
+    public String getTaskId() {
+        return taskId;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getDueDate() {
+        return dueDate;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public List<AssignedUserDTO> getAssignedUsers() {
+        return assignedUsers;
+    }
+
+    public String getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public String getWorkflowId() {
+        return workflowId;
+    }
+
+    public void setUnavailableUsers(List<String> unavailableUsers) {
+        this.unavailableUsers = unavailableUsers;
+    }
+
+
 
     // Setters
     public void setTaskId(String taskId) {
@@ -47,36 +87,10 @@ public class TaskResponseDTO {
         this.workflowId = workflowId;
     }
 
-    // Getters
-    public String getStatus() {
-        return status;
+    public List<String> getUnavailableUsers() {
+        return unavailableUsers;
     }
 
-    public String getTaskId() {
-        return taskId;
-    }
 
-    public String getDescription() {
-        return description;
-    }
 
-    public String getDueDate() {
-        return dueDate;
-    }
-
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
-    public List<AssignedUserDTO> getAssignedUsers() {
-        return assignedUsers;
-    }
-
-    public String getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public String getWorkflowId() {
-        return workflowId;
-    }
 }

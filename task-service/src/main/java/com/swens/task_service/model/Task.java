@@ -41,9 +41,10 @@ public class Task {
     private String workflowId;  // ✅ NEW FIELD
 
     public static class AssignedUser {
-        public AssignedUser(String userId, String userName) {
+        public AssignedUser(String userId, String userName, String email) {
             this.userId = userId;
             this.userName = userName;
+            this.email = email;
         }
 
         @NotBlank(message = "User ID is required")
@@ -51,6 +52,18 @@ public class Task {
 
         @NotBlank(message = "User name is required")
         private String userName;
+
+        @NotBlank(message = "Email is required")
+        private String email;
+
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
 
         public String getUserId() {
             return userId;

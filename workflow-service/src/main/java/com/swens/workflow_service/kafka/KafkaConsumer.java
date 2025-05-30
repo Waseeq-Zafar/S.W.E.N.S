@@ -1,13 +1,16 @@
 package com.swens.workflow_service.kafka;
 
 import com.swens.events.TaskEventProto.TaskEvent;
-import com.swens.workflow_service.dto.TaskEventDto;
+import com.swens.workflow_service.dto.TaskEventDTO;
 import com.swens.workflow_service.mapper.WorkflowMapper;
 import com.swens.workflow_service.model.Task;
 import com.swens.workflow_service.service.WorkflowService;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class KafkaConsumer {
@@ -29,23 +32,30 @@ public class KafkaConsumer {
             // Parse protobuf binary data to TaskEvent object
             TaskEvent event = TaskEvent.parseFrom(data);
 
-
-            // Map to your Task model dto
-            TaskEventDto taskEventDto = new TaskEventDto();
+            // Map to your TaskEventDTO
+            TaskEventDTO taskEventDto = new TaskEventDTO();
             taskEventDto.setTaskId(event.getTaskId());
             taskEventDto.setTaskName(event.getTaskName());
-            taskEventDto.setAssignedUserId(event.getAssignedUserId());
             taskEventDto.setEventType(event.getEventType());
             taskEventDto.setTaskStatus(event.getTaskStatus());
             taskEventDto.setWorkflowId(event.getWorkflowId());
             taskEventDto.setTimestamp(event.getTimestamp());
 
-            // Since workflowId is not in proto, decide workflowId logic here
-            String workflowId =  event.getWorkflowId(); // Or your custom logic here
+            // Map assigned users from proto to DTO
+            List<TaskEventDTO.AssignedUserDTO> assignedUsers = event.getAssignedUsersList().stream().map(protoUser -> {
+                TaskEventDTO.AssignedUserDTO userDto = new TaskEventDTO.AssignedUserDTO();
+                userDto.setUserId(protoUser.getUserId());
+                userDto.setUserName(protoUser.getUserName());
+                userDto.setEmail(protoUser.getEmail());
+                return userDto;
+            }).collect(Collectors.toList());
+
+            taskEventDto.setAssignedUsers(assignedUsers);
+
+            String workflowId = event.getWorkflowId(); // your logic here
 
             Task task = workflowMapper.mapDtoToTask(taskEventDto);
 
-            // Save or update the workflow with this task
             workflowService.addOrUpdateWorkflow(workflowId, task);
 
             System.out.println("Consumed and saved task event: " + event.getTaskId());
@@ -53,4 +63,5 @@ public class KafkaConsumer {
             e.printStackTrace();
         }
     }
+
 }

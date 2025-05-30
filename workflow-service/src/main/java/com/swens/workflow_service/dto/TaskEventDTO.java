@@ -1,15 +1,18 @@
 package com.swens.workflow_service.dto;
 
-public class TaskEventDto {
+import java.util.List;
+
+public class TaskEventDTO {
+
     private String taskId;
     private String taskName;
-    private String assignedUserId;
+    private List<AssignedUserDTO> assignedUsers;
     private String workflowId;
     private String eventType;
     private String taskStatus;
     private long timestamp;
 
-    public TaskEventDto() {
+    public TaskEventDTO() {
     }
 
     // Getters and setters
@@ -30,12 +33,12 @@ public class TaskEventDto {
         this.taskName = taskName;
     }
 
-    public String getAssignedUserId() {
-        return assignedUserId;
+    public List<AssignedUserDTO> getAssignedUsers() {
+        return assignedUsers;
     }
 
-    public void setAssignedUserId(String assignedUserId) {
-        this.assignedUserId = assignedUserId;
+    public void setAssignedUsers(List<AssignedUserDTO> assignedUsers) {
+        this.assignedUsers = assignedUsers;
     }
 
     public String getWorkflowId() {
@@ -68,5 +71,40 @@ public class TaskEventDto {
 
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
+    }
+
+    // Inner class for assigned user details
+    public static class AssignedUserDTO {
+        private String userId;
+        private String userName;
+        private String email;
+
+        public AssignedUserDTO() {
+        }
+
+        // Getters and setters
+        public String getUserId() {
+            return userId;
+        }
+
+        public void setUserId(String userId) {
+            this.userId = userId;
+        }
+
+        public String getUserName() {
+            return userName;
+        }
+
+        public void setUserName(String userName) {
+            this.userName = userName;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
     }
 }

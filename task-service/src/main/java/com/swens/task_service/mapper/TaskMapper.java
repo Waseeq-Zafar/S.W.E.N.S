@@ -19,7 +19,11 @@ public class TaskMapper {
         task.setAssignedUsers(
                 dto.getAssignedUsers() != null
                         ? dto.getAssignedUsers().stream()
-                        .map(user -> new Task.AssignedUser(user.getUserId(), user.getUserName()))
+                        .map(user -> new Task.AssignedUser(
+                                user.getUserId(),
+                                user.getUserName(),
+                                user.getEmail()
+                                ))
                         .collect(Collectors.toList())
                         : null
         );
@@ -43,7 +47,9 @@ public class TaskMapper {
         dto.setAssignedUsers(
                 task.getAssignedUsers() != null
                         ? task.getAssignedUsers().stream()
-                        .map(user -> new AssignedUserDTO(user.getUserId(), user.getUserName()))
+                        .map(user -> new AssignedUserDTO(user.getUserId(),
+                                user.getUserName(),
+                                user.getEmail()))
                         .collect(Collectors.toList())
                         : null
         );
@@ -69,7 +75,11 @@ public class TaskMapper {
         if (dto.getAssignedUsers() != null && !dto.getAssignedUsers().isEmpty()) {
             task.setAssignedUsers(
                     dto.getAssignedUsers().stream()
-                            .map(user -> new Task.AssignedUser(user.getUserId(), user.getUserName()))
+                            .map(user -> new Task.AssignedUser(
+                                    user.getUserId(),
+                                    user.getUserName(),
+                                    user.getEmail()
+                                    ))
                             .collect(Collectors.toList())
             );
         }
