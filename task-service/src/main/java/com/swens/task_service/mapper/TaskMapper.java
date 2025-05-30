@@ -16,15 +16,21 @@ public class TaskMapper {
         Task task = new Task();
         task.setStatus(dto.getStatus());
         task.setDescription(dto.getDescription());
+        task.setTaskName(dto.getTaskName());
         task.setAssignedUsers(
                 dto.getAssignedUsers() != null
                         ? dto.getAssignedUsers().stream()
-                        .map(user -> new Task.AssignedUser(user.getUserId(), user.getUserName()))
+                        .map(user -> new Task.AssignedUser(
+                                user.getUserId(),
+                                user.getUserName(),
+                                user.getEmail()
+                                ))
                         .collect(Collectors.toList())
                         : null
         );
         task.setCreatedAt(TimeUtil.nowUTC());
         task.setUpdatedAt(TimeUtil.nowUTC());
+        task.setWorkflowId(dto.getWorkflowId());
 
         if (dto.getDueDate() != null && !dto.getDueDate().isBlank()) {
             task.setDueDate(TimeUtil.parseISTToInstant(dto.getDueDate()));
@@ -42,13 +48,17 @@ public class TaskMapper {
         dto.setAssignedUsers(
                 task.getAssignedUsers() != null
                         ? task.getAssignedUsers().stream()
-                        .map(user -> new AssignedUserDTO(user.getUserId(), user.getUserName()))
+                        .map(user -> new AssignedUserDTO(user.getUserId(),
+                                user.getUserName(),
+                                user.getEmail()))
                         .collect(Collectors.toList())
                         : null
         );
         dto.setCreatedAt(TimeUtil.formatInstantToIST(task.getCreatedAt()));
         dto.setUpdatedAt(TimeUtil.formatInstantToIST(task.getUpdatedAt()));
         dto.setDueDate(TimeUtil.formatInstantToIST(task.getDueDate()));
+        dto.setWorkflowId(task.getWorkflowId());
+        dto.setTaskName(task.getTaskName());
 
         return dto;
     }
@@ -67,7 +77,11 @@ public class TaskMapper {
         if (dto.getAssignedUsers() != null && !dto.getAssignedUsers().isEmpty()) {
             task.setAssignedUsers(
                     dto.getAssignedUsers().stream()
-                            .map(user -> new Task.AssignedUser(user.getUserId(), user.getUserName()))
+                            .map(user -> new Task.AssignedUser(
+                                    user.getUserId(),
+                                    user.getUserName(),
+                                    user.getEmail()
+                                    ))
                             .collect(Collectors.toList())
             );
         }

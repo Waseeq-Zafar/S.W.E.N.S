@@ -1,9 +1,8 @@
-package com.swens.workflow_service.model;
+package com.swens.notification_service.model;
 
 import java.util.List;
 
-public class Task {
-
+public class TaskEventModel {
     private String taskId;
     private String taskName;
     private List<AssignedUser> assignedUsers;
@@ -12,11 +11,11 @@ public class Task {
     private String taskStatus;
     private long timestamp;
 
-    public Task() {
+    public TaskEventModel() {
     }
 
-    public Task(String taskId, String taskName, List<AssignedUser> assignedUsers,
-                String workflowId, String eventType, String taskStatus, long timestamp) {
+    public TaskEventModel(String taskId, String taskName, List<AssignedUser> assignedUsers,
+                          String workflowId, String eventType, String taskStatus, long timestamp) {
         this.taskId = taskId;
         this.taskName = taskName;
         this.assignedUsers = assignedUsers;
@@ -27,7 +26,6 @@ public class Task {
     }
 
     // Getters and setters
-
     public String getTaskId() {
         return taskId;
     }
@@ -86,7 +84,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task{" +
+        return "TaskEventModel{" +
                 "taskId='" + taskId + '\'' +
                 ", taskName='" + taskName + '\'' +
                 ", assignedUsers=" + assignedUsers +
@@ -97,7 +95,7 @@ public class Task {
                 '}';
     }
 
-    // Inner static class for AssignedUser
+    // ✅ Inner static class for AssignedUser
     public static class AssignedUser {
         private String userId;
         private String userName;
@@ -111,8 +109,6 @@ public class Task {
             this.userName = userName;
             this.email = email;
         }
-
-        // Getters and setters
 
         public String getUserId() {
             return userId;

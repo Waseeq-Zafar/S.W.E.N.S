@@ -1,6 +1,7 @@
 package com.swens.task_service.kafka;
 
 import com.swens.task_service.model.Task;
+import com.swens.events.TaskEventProto.AssignedUser;
 import com.swens.events.TaskEventProto.TaskEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,20 +19,31 @@ public class KafkaProducer {
     }
 
     public void sendTaskCreatedEvent(Task task) {
-        TaskEvent event = TaskEvent.newBuilder()
+        TaskEvent.Builder builder = TaskEvent.newBuilder()
                 .setTaskId(task.getTaskId())
-                .setTaskName(task.getDescription()) // using description as task name
-                .setAssignedUserId(getFirstAssignedUserId(task))
+                .setTaskName(task.getTaskName())
                 .setEventType("TASK_CREATED")
                 .setTaskStatus(task.getStatus())
-                .setTimestamp(System.currentTimeMillis())
-                .build();
+                .setWorkflowId(task.getWorkflowId())
+                .setTimestamp(System.currentTimeMillis());
+
+        if (task.getAssignedUsers() != null && !task.getAssignedUsers().isEmpty()) {
+            for (com.swens.task_service.model.Task.AssignedUser user : task.getAssignedUsers()) {
+                AssignedUser protoUser = AssignedUser.newBuilder()
+                        .setUserId(user.getUserId())
+                        .setUserName(user.getUserName())
+                        .setEmail(user.getEmail())
+                        .build();
+                builder.addAssignedUsers(protoUser);
+            }
+        }
+
+        TaskEvent event = builder.build();
 
         try {
             kafkaTemplate.send("task.created", event.toByteArray());
             log.info("Sent TASK_CREATED event for taskId {}", task.getTaskId());
 
-            // Log all assigned users details:
             if (task.getAssignedUsers() != null && !task.getAssignedUsers().isEmpty()) {
                 task.getAssignedUsers().forEach(user -> {
                     log.info("Assigned User: ID = {}, Name = {}", user.getUserId(), user.getUserName());
@@ -45,26 +57,36 @@ public class KafkaProducer {
         }
     }
 
-
     public void sendTaskUpdatedEvent(Task task) {
-        TaskEvent event = TaskEvent.newBuilder()
+        TaskEvent.Builder builder = TaskEvent.newBuilder()
                 .setTaskId(task.getTaskId())
-                .setTaskName(task.getDescription()) // using description as task name
-                .setAssignedUserId(getFirstAssignedUserId(task))
+                .setTaskName(task.getTaskName())
                 .setEventType("TASK_UPDATED")
                 .setTaskStatus(task.getStatus())
-                .setTimestamp(System.currentTimeMillis())
-                .build();
+                .setWorkflowId(task.getWorkflowId())
+                .setTimestamp(System.currentTimeMillis());
+
+        if (task.getAssignedUsers() != null && !task.getAssignedUsers().isEmpty()) {
+            for (com.swens.task_service.model.Task.AssignedUser user : task.getAssignedUsers()) {
+                AssignedUser protoUser = AssignedUser.newBuilder()
+                        .setUserId(user.getUserId())
+                        .setUserName(user.getUserName())
+                        .setEmail(user.getEmail())
+                        .build();
+                builder.addAssignedUsers(protoUser);
+            }
+        }
+
+        TaskEvent event = builder.build();
 
         try {
             kafkaTemplate.send("task.updated", event.toByteArray());
             log.info("Sent TASK_UPDATED event for taskId {}", task.getTaskId());
 
-            // Log details of all assigned users
             if (task.getAssignedUsers() != null && !task.getAssignedUsers().isEmpty()) {
-                task.getAssignedUsers().forEach(user ->
-                        log.info("Assigned User - ID: {}, Name: {}", user.getUserId(), user.getUserName())
-                );
+                task.getAssignedUsers().forEach(user -> {
+                    log.info("Assigned User - ID: {}, Name: {}", user.getUserId(), user.getUserName());
+                });
             } else {
                 log.info("No assigned users for taskId {}", task.getTaskId());
             }
@@ -72,13 +94,5 @@ public class KafkaProducer {
         } catch (Exception e) {
             log.error("Error sending TASK_UPDATED event: {}", event, e);
         }
-    }
-
-
-    private String getFirstAssignedUserId(Task task) {
-        if (task.getAssignedUsers() != null && !task.getAssignedUsers().isEmpty()) {
-            return task.getAssignedUsers().get(0).getUserId();
-        }
-        return "UNKNOWN";
     }
 }

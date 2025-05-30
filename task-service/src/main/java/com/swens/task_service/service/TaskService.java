@@ -4,6 +4,8 @@ import com.swens.task_service.dto.TaskRequestDTO;
 import com.swens.task_service.dto.TaskResponseDTO;
 import com.swens.task_service.dto.TaskUpdateDTO;
 import com.swens.task_service.dto.UserInfoDTO;
+import com.swens.task_service.exception.NoAssignedUserException;
+import com.swens.task_service.exception.NoUserAvailableException;
 import com.swens.task_service.exception.TaskNotFoundException;
 import com.swens.task_service.grpc.UserServiceGrpcClient;
 import com.swens.task_service.kafka.KafkaProducer;
@@ -48,16 +50,51 @@ public class TaskService {
 
     public TaskResponseDTO createTask(TaskRequestDTO requestDTO) {
         Task task = TaskMapper.toEntity(requestDTO);
+        List<Task.AssignedUser> incomingUsers = task.getAssignedUsers();
+
+        if (incomingUsers == null || incomingUsers.isEmpty()) {
+            throw new NoAssignedUserException("Task must have at least one assigned user.");
+        }
+
+        List<Task.AssignedUser> assignedUsers = new ArrayList<>();
+        List<String> unavailableUsers = new ArrayList<>();
+
+        for (Task.AssignedUser user : incomingUsers) {
+            String status = userTaskMap.get(user.getUserId());
+
+            if (NOT_ASSIGNED.equals(status)) {
+                assignedUsers.add(user);
+            } else if (ASSIGNED.equals(status)) {
+                unavailableUsers.add(user.getUserId() + " is already assigned to another task");
+            } else {
+                unavailableUsers.add(user.getUserId() + " is not tracked or unavailable");
+            }
+        }
+
+        if (assignedUsers.isEmpty()) {
+            String msg = "No available users to assign the task. Details: " + String.join(", ", unavailableUsers);
+            throw new NoUserAvailableException(msg);
+        }
+
+        // Assign all available users
+        task.setAssignedUsers(assignedUsers);
+
         Task saved = taskRepository.save(task);
 
-        for (Task.AssignedUser user : saved.getAssignedUsers()) {
+        // Mark all assigned users in the userTaskMap
+        for (Task.AssignedUser user : assignedUsers) {
             userTaskMap.put(user.getUserId(), ASSIGNED);
         }
 
         kafkaProducer.sendTaskCreatedEvent(saved);
 
-        return TaskMapper.toDTO(saved);
+        TaskResponseDTO responseDTO = TaskMapper.toDTO(saved);
+        responseDTO.setUnavailableUsers(unavailableUsers);
+
+        return responseDTO;
     }
+
+
 
     public TaskResponseDTO updateTask(String taskId, TaskUpdateDTO updateDTO) {
         Task task = taskRepository.findById(taskId)
@@ -69,7 +106,7 @@ public class TaskService {
 
         TaskMapper.updateEntity(task, updateDTO);
 
-        // If completed, mark users as NOT_ASSIGNED, but keep them in the task for history
+        // If completed, mark users as NOT_ASSIGNED but keep them in the task for history
         if (updatedStatus.equals("completed")) {
             for (Task.AssignedUser oldUser : oldAssignedUsers) {
                 userTaskMap.put(oldUser.getUserId(), NOT_ASSIGNED);

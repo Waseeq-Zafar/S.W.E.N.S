@@ -1,29 +1,18 @@
-package com.swens.workflow_service.model;
+package com.swens.workflow_service.dto;
 
 import java.util.List;
 
-public class Task {
+public class TaskEventDTO {
 
     private String taskId;
     private String taskName;
-    private List<AssignedUser> assignedUsers;
+    private List<AssignedUserDTO> assignedUsers;
     private String workflowId;
     private String eventType;
     private String taskStatus;
     private long timestamp;
 
-    public Task() {
-    }
-
-    public Task(String taskId, String taskName, List<AssignedUser> assignedUsers,
-                String workflowId, String eventType, String taskStatus, long timestamp) {
-        this.taskId = taskId;
-        this.taskName = taskName;
-        this.assignedUsers = assignedUsers;
-        this.workflowId = workflowId;
-        this.eventType = eventType;
-        this.taskStatus = taskStatus;
-        this.timestamp = timestamp;
+    public TaskEventDTO() {
     }
 
     // Getters and setters
@@ -44,11 +33,11 @@ public class Task {
         this.taskName = taskName;
     }
 
-    public List<AssignedUser> getAssignedUsers() {
+    public List<AssignedUserDTO> getAssignedUsers() {
         return assignedUsers;
     }
 
-    public void setAssignedUsers(List<AssignedUser> assignedUsers) {
+    public void setAssignedUsers(List<AssignedUserDTO> assignedUsers) {
         this.assignedUsers = assignedUsers;
     }
 
@@ -84,36 +73,16 @@ public class Task {
         this.timestamp = timestamp;
     }
 
-    @Override
-    public String toString() {
-        return "Task{" +
-                "taskId='" + taskId + '\'' +
-                ", taskName='" + taskName + '\'' +
-                ", assignedUsers=" + assignedUsers +
-                ", workflowId='" + workflowId + '\'' +
-                ", eventType='" + eventType + '\'' +
-                ", taskStatus='" + taskStatus + '\'' +
-                ", timestamp=" + timestamp +
-                '}';
-    }
-
-    // Inner static class for AssignedUser
-    public static class AssignedUser {
+    // Inner class for assigned user details
+    public static class AssignedUserDTO {
         private String userId;
         private String userName;
         private String email;
 
-        public AssignedUser() {
-        }
-
-        public AssignedUser(String userId, String userName, String email) {
-            this.userId = userId;
-            this.userName = userName;
-            this.email = email;
+        public AssignedUserDTO() {
         }
 
         // Getters and setters
-
         public String getUserId() {
             return userId;
         }
@@ -136,15 +105,6 @@ public class Task {
 
         public void setEmail(String email) {
             this.email = email;
-        }
-
-        @Override
-        public String toString() {
-            return "AssignedUser{" +
-                    "userId='" + userId + '\'' +
-                    ", userName='" + userName + '\'' +
-                    ", email='" + email + '\'' +
-                    '}';
         }
     }
 }
