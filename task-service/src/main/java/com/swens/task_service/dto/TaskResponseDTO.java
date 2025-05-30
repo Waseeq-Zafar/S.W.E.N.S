@@ -13,6 +13,16 @@ public class TaskResponseDTO {
     private String updatedAt;    // changed from Instant to String
     private String workflowId;  // <-- Added this field
     private List<String> unavailableUsers;
+    private String taskName;
+
+    public String getTaskName() {
+        return taskName;
+    }
+
+    public void setTaskName(String taskName) {
+        this.taskName = taskName;
+    }
+
 
 
     // Getters

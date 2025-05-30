@@ -16,6 +16,7 @@ public class TaskMapper {
         Task task = new Task();
         task.setStatus(dto.getStatus());
         task.setDescription(dto.getDescription());
+        task.setTaskName(dto.getTaskName());
         task.setAssignedUsers(
                 dto.getAssignedUsers() != null
                         ? dto.getAssignedUsers().stream()
@@ -57,6 +58,7 @@ public class TaskMapper {
         dto.setUpdatedAt(TimeUtil.formatInstantToIST(task.getUpdatedAt()));
         dto.setDueDate(TimeUtil.formatInstantToIST(task.getDueDate()));
         dto.setWorkflowId(task.getWorkflowId());
+        dto.setTaskName(task.getTaskName());
 
         return dto;
     }

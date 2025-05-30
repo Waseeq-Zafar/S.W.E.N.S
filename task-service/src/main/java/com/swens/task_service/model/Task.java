@@ -40,6 +40,18 @@ public class Task {
     @NotBlank(message = "Workflow ID is required")
     private String workflowId;  // ✅ NEW FIELD
 
+    @NotNull(message = "Task Name is required")
+    private String taskName;
+
+
+    public String getTaskName() {
+        return taskName;
+    }
+
+    public void setTaskName(String taskName) {
+        this.taskName = taskName;
+    }
+
     public static class AssignedUser {
         public AssignedUser(String userId, String userName, String email) {
             this.userId = userId;

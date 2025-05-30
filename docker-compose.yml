@@ -139,6 +139,20 @@ services:
       - swens
     # No ports mapping = NOT exposed to localhost
 
+  notification-service:
+    build:
+      context: ./notification-service
+    container_name: notification-service
+    depends_on:
+      - kafka
+      - zookeeper
+      - workflow-service
+    environment:
+      SERVER_PORT: 8000
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    networks:
+      - swens
+
   api-gateway:
     build:
       context: ./api-gateway
