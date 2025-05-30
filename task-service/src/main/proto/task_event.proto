@@ -11,5 +11,6 @@ message TaskEvent {
   string assignedUserId = 3;
   string eventType = 4; // e.g., "TASK_CREATED", "TASK_UPDATED"
   string taskStatus = 5;
-  int64 timestamp = 6;  // epoch millis
+  string workflowId = 6;
+  int64 timestamp = 7;  // epoch millis
 }

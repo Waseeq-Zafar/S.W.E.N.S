@@ -1,30 +1,28 @@
 package com.swens.workflow_service.model;
 
-
-
 public class Task {
-
 
     private String taskId;
     private String taskName;
     private String assignedUserId;
     private String eventType;   // e.g., TASK_CREATED, TASK_UPDATED
     private String taskStatus;
-    private long timestamp;
-
+    private long timestamp;     // epoch millis
+    private String workflowId;  // <-- Added field
 
     public Task() {
     }
 
-    public Task(String taskId, String taskName, String assignedUserId, String eventType, long timestamp) {
+    public Task(String taskId, String taskName, String assignedUserId, String eventType, long timestamp, String workflowId) {
         this.taskId = taskId;
         this.taskName = taskName;
         this.assignedUserId = assignedUserId;
         this.eventType = eventType;
         this.timestamp = timestamp;
+        this.workflowId = workflowId;
     }
 
-
+    // Getters
     public String getTaskId() {
         return taskId;
     }
@@ -49,6 +47,11 @@ public class Task {
         return timestamp;
     }
 
+    public String getWorkflowId() {
+        return workflowId;
+    }
+
+    // Setters
     public void setTaskId(String taskId) {
         this.taskId = taskId;
     }
@@ -72,5 +75,8 @@ public class Task {
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
-    // epoch millis
+
+    public void setWorkflowId(String workflowId) {
+        this.workflowId = workflowId;
+    }
 }

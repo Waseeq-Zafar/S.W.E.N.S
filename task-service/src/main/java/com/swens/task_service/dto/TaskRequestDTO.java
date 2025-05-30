@@ -1,27 +1,28 @@
 package com.swens.task_service.dto;
 
-import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import java.time.Instant;
 import java.util.List;
-
 
 public class TaskRequestDTO {
 
     @NotBlank(message = "Status must not be blank")
     private String status;
 
-
     @NotNull(message = "Due date is required")
     private String dueDate;
-
 
     @NotEmpty(message = "At least one assigned user is required")
     private List<@NotNull AssignedUserDTO> assignedUsers;
 
+    @NotBlank(message = "Description must not be blank")
+    private String description;
 
+    @NotBlank(message = "Workflow ID is required")
+    private String workflowId; // ✅ NEW FIELD
+
+    // Getters
     public String getDescription() {
         return description;
     }
@@ -38,10 +39,11 @@ public class TaskRequestDTO {
         return assignedUsers;
     }
 
-    @NotBlank(message = "Description must not be blank")
-    private String description;
+    public String getWorkflowId() {
+        return workflowId;
+    }
 
-
+    // Setters
     public void setStatus(String status) {
         this.status = status;
     }
@@ -58,4 +60,7 @@ public class TaskRequestDTO {
         this.assignedUsers = assignedUsers;
     }
 
+    public void setWorkflowId(String workflowId) {
+        this.workflowId = workflowId;
+    }
 }

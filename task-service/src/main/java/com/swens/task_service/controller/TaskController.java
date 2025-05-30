@@ -28,7 +28,7 @@ public class TaskController {
         return ResponseEntity.ok(users);
     }
 
-    // 2. Create task
+    // 2. Create a task
     @PostMapping
     public ResponseEntity<TaskResponseDTO> createTask(@Valid @RequestBody TaskRequestDTO requestDTO) {
         TaskResponseDTO created = taskService.createTask(requestDTO);

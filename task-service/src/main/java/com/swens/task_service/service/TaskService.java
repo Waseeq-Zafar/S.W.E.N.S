@@ -69,7 +69,7 @@ public class TaskService {
 
         TaskMapper.updateEntity(task, updateDTO);
 
-        // If completed, mark users as NOT_ASSIGNED, but keep them in the task for history
+        // If completed, mark users as NOT_ASSIGNED but keep them in the task for history
         if (updatedStatus.equals("completed")) {
             for (Task.AssignedUser oldUser : oldAssignedUsers) {
                 userTaskMap.put(oldUser.getUserId(), NOT_ASSIGNED);

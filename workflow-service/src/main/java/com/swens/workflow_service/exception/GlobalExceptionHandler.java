@@ -1,4 +1,4 @@
-package com.swens.task_service.exception;
+package com.swens.workflow_service.exception;
 
 
 import org.slf4j.Logger;
@@ -12,16 +12,14 @@ import java.util.Map;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(TaskNotFoundException.class)
-    public ResponseEntity<Map<String, String>> handleTaskNotFoundException(TaskNotFoundException tx) {
-        log.warn("task not found {}", tx.getMessage());
+    @ExceptionHandler(WorkflowNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleWorkflowNotFoundException(WorkflowNotFoundException wx) {
+        log.warn("workflow not found {}", wx.getMessage());
 
         Map<String, String> errors = new HashMap<>();
-        errors.put("message", "Task not found");
+        errors.put("message", "Workflow not found");
         return ResponseEntity.status(404).body(errors); // ✅ Use 404 status
     }
-
 }

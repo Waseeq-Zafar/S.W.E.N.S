@@ -24,6 +24,7 @@ public class KafkaProducer {
                 .setAssignedUserId(getFirstAssignedUserId(task))
                 .setEventType("TASK_CREATED")
                 .setTaskStatus(task.getStatus())
+                .setWorkflowId(task.getWorkflowId())
                 .setTimestamp(System.currentTimeMillis())
                 .build();
 
@@ -53,6 +54,7 @@ public class KafkaProducer {
                 .setAssignedUserId(getFirstAssignedUserId(task))
                 .setEventType("TASK_UPDATED")
                 .setTaskStatus(task.getStatus())
+                .setWorkflowId(task.getWorkflowId())
                 .setTimestamp(System.currentTimeMillis())
                 .build();
 

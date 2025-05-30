@@ -1,6 +1,7 @@
 package com.swens.workflow_service.controller;
 
 
+import com.swens.workflow_service.dto.WorkflowResponseDTO;
 import com.swens.workflow_service.model.Workflow;
 import com.swens.workflow_service.service.WorkflowService;
 import org.springframework.http.HttpStatus;
@@ -19,14 +20,24 @@ public class WorkflowController {
 
     // POST /workflow
     @PostMapping
-    public ResponseEntity<Workflow> createWorkflow(@RequestBody Workflow workflow) {
-        return ResponseEntity.ok(workflowService.createWorkflow(workflow));
+    public ResponseEntity<WorkflowResponseDTO> createEmptyWorkflow() {
+        WorkflowResponseDTO responseDTO = workflowService.createWorkflow();
+        return ResponseEntity.ok(responseDTO);
     }
 
     @GetMapping
     public ResponseEntity<List<Workflow>> getAllWorkflows() {
         List<Workflow> workflows = workflowService.getAllWorkflows();
         return new ResponseEntity<>(workflows, HttpStatus.OK);
+    }
+
+    @GetMapping("/{workflowId}")
+    public ResponseEntity<Workflow> getWorkflowByWorkflowId(@PathVariable String workflowId) {
+        Workflow workflow = workflowService.getWorkflowByWorkflowId(workflowId);
+        if (workflow == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(workflow, HttpStatus.OK);
     }
 
 }

@@ -12,6 +12,9 @@ public class TaskResponseDTO {
     private String createdAt;    // changed from Instant to String
     private String updatedAt;    // changed from Instant to String
 
+    private String workflowId;  // <-- Added this field
+
+    // Setters
     public void setTaskId(String taskId) {
         this.taskId = taskId;
     }
@@ -40,6 +43,11 @@ public class TaskResponseDTO {
         this.updatedAt = updatedAt;
     }
 
+    public void setWorkflowId(String workflowId) {
+        this.workflowId = workflowId;
+    }
+
+    // Getters
     public String getStatus() {
         return status;
     }
@@ -66,5 +74,9 @@ public class TaskResponseDTO {
 
     public String getUpdatedAt() {
         return updatedAt;
+    }
+
+    public String getWorkflowId() {
+        return workflowId;
     }
 }

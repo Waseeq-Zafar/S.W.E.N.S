@@ -15,6 +15,8 @@ public class Workflow {
     private long createdAt;
     private long updatedAt;
     private List<Task> tasks;
+    private int completionPercentage;
+
 
     public Workflow() {
     }
@@ -25,11 +27,12 @@ public class Workflow {
         this.updatedAt = System.currentTimeMillis();
     }
 
-    public Workflow(String workflowId, List<Task> tasks, long createdAt, long updatedAt) {
+    public Workflow(String workflowId, List<Task> tasks, long createdAt, long updatedAt, int completionPercentage) {
         this.workflowId = workflowId;
         this.tasks = tasks;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.completionPercentage = completionPercentage;
     }
 
     // Getters
@@ -73,4 +76,13 @@ public class Workflow {
     public void setTasks(List<Task> tasks) {
         this.tasks = tasks;
     }
+
+    public int getCompletionPercentage() {
+        return completionPercentage;
+    }
+
+    public void setCompletionPercentage(int completionPercentage) {
+        this.completionPercentage = completionPercentage;
+    }
+
 }

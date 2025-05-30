@@ -6,6 +6,7 @@ public class TaskEventDto {
     private String assignedUserId;
     private String workflowId;
     private String eventType;
+    private String taskStatus;
     private long timestamp;
 
     public TaskEventDto() {
@@ -51,6 +52,14 @@ public class TaskEventDto {
 
     public void setEventType(String eventType) {
         this.eventType = eventType;
+    }
+
+    public String getTaskStatus() {
+        return taskStatus;
+    }
+
+    public void setTaskStatus(String taskStatus) {
+        this.taskStatus = taskStatus;
     }
 
     public long getTimestamp() {

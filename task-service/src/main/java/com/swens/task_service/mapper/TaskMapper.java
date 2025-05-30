@@ -25,6 +25,7 @@ public class TaskMapper {
         );
         task.setCreatedAt(TimeUtil.nowUTC());
         task.setUpdatedAt(TimeUtil.nowUTC());
+        task.setWorkflowId(dto.getWorkflowId());
 
         if (dto.getDueDate() != null && !dto.getDueDate().isBlank()) {
             task.setDueDate(TimeUtil.parseISTToInstant(dto.getDueDate()));
@@ -49,6 +50,7 @@ public class TaskMapper {
         dto.setCreatedAt(TimeUtil.formatInstantToIST(task.getCreatedAt()));
         dto.setUpdatedAt(TimeUtil.formatInstantToIST(task.getUpdatedAt()));
         dto.setDueDate(TimeUtil.formatInstantToIST(task.getDueDate()));
+        dto.setWorkflowId(task.getWorkflowId());
 
         return dto;
     }
