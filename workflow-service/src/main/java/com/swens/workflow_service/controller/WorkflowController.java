@@ -7,7 +7,9 @@ import com.swens.workflow_service.service.WorkflowService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -22,8 +24,16 @@ public class WorkflowController {
     @PostMapping
     public ResponseEntity<WorkflowResponseDTO> createEmptyWorkflow() {
         WorkflowResponseDTO responseDTO = workflowService.createWorkflow();
-        return ResponseEntity.ok(responseDTO);
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(responseDTO.getWorkflowId()) // assuming getId() gives the workflow's ID
+                .toUri();
+
+        return ResponseEntity.created(location).body(responseDTO);
     }
+
 
     @GetMapping
     public ResponseEntity<List<Workflow>> getAllWorkflows() {

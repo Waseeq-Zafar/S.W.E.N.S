@@ -1,15 +1,20 @@
 package com.swens.auth_service.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.swens.auth_service.dto.LoginRequestDTO;
 import com.swens.auth_service.dto.LoginResponseDTO;
+import com.swens.auth_service.dto.UserCacheDTO;
 import com.swens.auth_service.grpc.UserServiceGrpcClient;
 import com.swens.auth_service.util.JwtUtil;
 import com.swens.grpc.UserResponse;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -20,83 +25,144 @@ public class AuthService {
     private final JwtUtil jwtUtil;
     private final UserServiceGrpcClient userServiceGrpcClient;
 
-    // In-memory store for refresh tokens
-    private final ConcurrentHashMap<String, String> refreshTokenStore = new ConcurrentHashMap<>();
+//    private final ConcurrentHashMap<String, String> refreshTokenStore = new ConcurrentHashMap<>();
+
+    private final StringRedisTemplate redisTemplate;
+    private final ObjectMapper objectMapper;
+
 
     public AuthService(PasswordEncoder passwordEncoder,
                        JwtUtil jwtUtil,
-                       UserServiceGrpcClient userServiceGrpcClient) {
+                       UserServiceGrpcClient userServiceGrpcClient,
+                       StringRedisTemplate redisTemplate,
+                       ObjectMapper objectMapper) {
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
         this.userServiceGrpcClient = userServiceGrpcClient;
+        this.redisTemplate = redisTemplate;
+        this.objectMapper = objectMapper;
     }
 
     public Optional<LoginResponseDTO> authenticate(LoginRequestDTO loginRequestDTO) {
-        UserResponse grpcUser = userServiceGrpcClient.getUserCredentials(loginRequestDTO.getEmail());
+        UserResponse grpcUser;
 
-        if (grpcUser == null || grpcUser.getName().isEmpty()) {
+        try {
+            String email = loginRequestDTO.getEmail();
+            String cacheKey = "user:" + email;
+            String cachedUserJson = redisTemplate.opsForValue().get(cacheKey);
+
+            UserCacheDTO cachedUser;
+
+            if (cachedUserJson != null) {
+                cachedUser = objectMapper.readValue(cachedUserJson, UserCacheDTO.class);
+                System.out.println("Loaded from Redis cache");
+
+                grpcUser = UserResponse.newBuilder()
+                        .setName(cachedUser.getName())
+                        .setHashedPassword(cachedUser.getHashedPassword())
+                        .setRole(cachedUser.getRole())
+                        .build();
+
+            } else {
+                grpcUser = userServiceGrpcClient.getUserCredentials(email);
+                System.out.println("Loaded from gRPC");
+
+                if (grpcUser == null || grpcUser.getName().isEmpty()) {
+                    return Optional.empty();
+                }
+
+                UserCacheDTO userToCache = new UserCacheDTO(
+                        email,
+                        grpcUser.getName(),
+                        grpcUser.getHashedPassword(),
+                        grpcUser.getRole()
+                );
+
+                String json = objectMapper.writeValueAsString(userToCache);
+                redisTemplate.opsForValue().set(cacheKey, json, Duration.ofMinutes(10080));
+            }
+
+            boolean matches = passwordEncoder.matches(
+                    loginRequestDTO.getPassword(),
+                    grpcUser.getHashedPassword()
+            );
+
+            if (!matches) return Optional.empty();
+
+            String refreshToken = jwtUtil.generateRefreshToken(email, grpcUser.getRole());
+            String accessToken = jwtUtil.generateJwtToken(email, grpcUser.getRole());
+
+//            refreshTokenStore.put(loginRequestDTO.getEmail(), refreshToken);
+
+
+            redisTemplate.opsForValue().set("refresh_token:" + email, refreshToken);
+
+            return Optional.of(new LoginResponseDTO(grpcUser.getName(), accessToken, refreshToken));
+
+        } catch (Exception e) {
+            e.printStackTrace(); // Helps to debug what's wrong
             return Optional.empty();
         }
-
-        boolean matches = passwordEncoder.matches(
-                loginRequestDTO.getPassword(),
-                grpcUser.getHashedPassword()
-        );
-
-        if (!matches) {
-            return Optional.empty();
-        }
-
-        String refreshToken = jwtUtil.generateRefreshToken(loginRequestDTO.getEmail(), grpcUser.getRole());
-        String accessToken = jwtUtil.generateJwtToken(loginRequestDTO.getEmail(), grpcUser.getRole());
-
-        // Store refresh token against email
-        refreshTokenStore.put(loginRequestDTO.getEmail(), refreshToken);
-
-        return Optional.of(new LoginResponseDTO(grpcUser.getName(), accessToken, refreshToken));
     }
 
     public boolean validateToken(String token) {
         try {
             jwtUtil.validateToken(token);
             return true;
-        } catch (JwtException e){
+        } catch (JwtException e) {
             return false;
         }
     }
 
     public Optional<LoginResponseDTO> refreshAccessToken(String refreshToken) {
         try {
-            // Verify token signature and expiration
+            // 1. Validate the token (will throw if invalid/expired)
             jwtUtil.validateToken(refreshToken);
 
-            // Extract email and role from a valid token
+            // 2. Extract data from token
             String email = jwtUtil.extractEmailFromToken(refreshToken);
             String role = jwtUtil.extractRoleFromToken(refreshToken);
 
-            // Check if a token exists in our store (simple map-based store)
-            String storedToken = refreshTokenStore.get(email);
-            if (storedToken == null || !storedToken.equals(refreshToken)) {
-                return Optional.empty(); // Either no token or mismatch
+//            String storedToken = refreshTokenStore.get(email);
+
+            // 3. Get stored token from Redis
+            String storedToken = redisTemplate.opsForValue().get("refresh_token:" + email);
+
+            if (storedToken == null) {
+                System.out.println("No stored token found in Redis");
+                return Optional.empty();
             }
 
-            // Generate a new access token
+            if (!storedToken.equals(refreshToken)) {
+                System.out.println("Refresh token mismatch");
+                return Optional.empty();
+            }
+
+            // 4. Generate a new access token
             String newAccessToken = jwtUtil.generateJwtToken(email, role);
+
             return Optional.of(new LoginResponseDTO(email, newAccessToken, refreshToken));
 
         } catch (ExpiredJwtException e) {
-            // Remove expired token from store
-            String email = jwtUtil.extractEmailFromToken(refreshToken); // can still extract from the expired token
-            refreshTokenStore.remove(email);
+            // Remove expired token
+            try {
+                String email = jwtUtil.extractEmailFromToken(refreshToken);
 
-            // Inform the frontend to redirect to log in
+//                refreshTokenStore.remove(email);
+
+                redisTemplate.delete("refresh_token:" + email);
+
+            } catch (Exception ignored) {}
+
+            System.out.println("Refresh token expired");
             return Optional.empty();
 
         } catch (JwtException e) {
-            // Invalid token
+            System.out.println("Invalid refresh token: " + e.getMessage());
             return Optional.empty();
         }
     }
+
 
     public String getRole(String token) {
         return jwtUtil.extractRoleFromToken(token);

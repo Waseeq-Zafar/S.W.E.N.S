@@ -8,7 +8,9 @@ import com.swens.task_service.service.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -32,8 +34,16 @@ public class TaskController {
     @PostMapping
     public ResponseEntity<TaskResponseDTO> createTask(@Valid @RequestBody TaskRequestDTO requestDTO) {
         TaskResponseDTO created = taskService.createTask(requestDTO);
-        return ResponseEntity.ok(created);
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(created.getTaskId()) // assuming getId() returns the created task's ID
+                .toUri();
+
+        return ResponseEntity.created(location).body(created);
     }
+
 
     // 3. Update task
     @PutMapping("/{taskId}")

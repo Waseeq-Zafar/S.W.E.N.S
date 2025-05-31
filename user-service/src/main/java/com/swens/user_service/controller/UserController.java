@@ -9,6 +9,9 @@ import jakarta.validation.groups.Default;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping("/users")
@@ -21,8 +24,17 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<UserResponseDTO> createUser(@Validated({Default.class}) @RequestBody UserRequestDTO userRequestDTO) {
-        return ResponseEntity.ok(userService.createUser(userRequestDTO));
+        UserResponseDTO createdUser = userService.createUser(userRequestDTO);
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()               // get the current request URL (/users or whatever)
+                .path("/{id}")                      // append /{id}
+                .buildAndExpand(createdUser.getId())  // expand {id} with the created user's ID
+                .toUri();
+
+        return ResponseEntity.created(location).body(createdUser);
     }
+
 
     @GetMapping("/{email}")
     public ResponseEntity<UserLoginDTO> getUserByEmail(@PathVariable String email) {
