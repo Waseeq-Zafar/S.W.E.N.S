@@ -13,7 +13,7 @@ public class EmailService {
 
     public void sendTaskNotification(String toEmail, String subject, String body) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("YOUR_EMAIL_ADDRESS");
+        message.setFrom("email-address-here");
         message.setTo(toEmail);
         message.setSubject(subject);
         message.setText(body);

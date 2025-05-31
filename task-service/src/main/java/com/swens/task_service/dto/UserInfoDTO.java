@@ -4,6 +4,8 @@ public class UserInfoDTO {
     private String id;
     private String name;
 
+    public UserInfoDTO() {}
+
     public UserInfoDTO(String id, String name, String email, String role) {
         this.id = id;
         this.name = name;
