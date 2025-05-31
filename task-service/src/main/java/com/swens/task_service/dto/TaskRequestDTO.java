@@ -22,6 +22,19 @@ public class TaskRequestDTO {
     @NotBlank(message = "Workflow ID is required")
     private String workflowId; // ✅ NEW FIELD
 
+    @NotNull(message = "Task Name is required")
+    private String taskName;
+
+
+    public String getTaskName() {
+        return taskName;
+    }
+
+    public void setTaskName(String taskName) {
+        this.taskName = taskName;
+    }
+
+
     // Getters
     public String getDescription() {
         return description;

@@ -89,12 +89,34 @@ services:
     container_name: auth-service
     depends_on:
       - user-service
+      - redis-auth
     environment:
       SERVER_PORT: 3000
       GRPC_CLIENT_USERSERVICE_ADDRESS: static://user-service:9090
       JWT_SECRET: vLw4a7v7D1XqXx+MshFwPVmIb7A3DCw2r+VtGMLglWc=
+      SPRING_DATA_REDIS_HOST: redis-auth
+      SPRING_DATA_REDIS_PORT: 6379
     networks:
       - swens
+
+
+  redis-auth:
+    image: redis:latest
+    container_name: redis-auth
+    networks:
+      - swens
+    volumes:
+      - redis_auth_data:/data
+
+  redis-task:
+    image: redis:latest
+    container_name: redis-task
+    networks:
+      - swens
+    volumes:
+      - redis_task_data:/data
+
+
 
   task-service:
     build:
@@ -105,12 +127,15 @@ services:
       - user-service
       - kafka
       - zookeeper
+      - redis-task
     environment:
       SERVER_PORT: 6000
       SPRING_PROFILES_ACTIVE: docker
       SPRING_DATA_MONGODB_URI: mongodb://admin_user:password@task-mongodb:27017
       SPRING_DATA_MONGODB_DATABASE: db
       GRPC_CLIENT_USERSERVICE_ADDRESS: static://user-service:9090
+      SPRING_DATA_REDIS_HOST: redis-task
+      SPRING_DATA_REDIS_PORT: 6379
 
       # Kafka config
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
@@ -139,6 +164,20 @@ services:
       - swens
     # No ports mapping = NOT exposed to localhost
 
+  notification-service:
+    build:
+      context: ./notification-service
+    container_name: notification-service
+    depends_on:
+      - kafka
+      - zookeeper
+      - workflow-service
+    environment:
+      SERVER_PORT: 8000
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    networks:
+      - swens
+
   api-gateway:
     build:
       context: ./api-gateway
@@ -160,6 +199,8 @@ volumes:
   pgdata:
   task_mongodata:
   workflow_mongodata:
+  redis_auth_data:
+  redis_task_data:
 
 networks:
   swens:

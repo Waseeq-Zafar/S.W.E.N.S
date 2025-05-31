@@ -21,7 +21,7 @@ public class KafkaProducer {
     public void sendTaskCreatedEvent(Task task) {
         TaskEvent.Builder builder = TaskEvent.newBuilder()
                 .setTaskId(task.getTaskId())
-                .setTaskName(task.getDescription())
+                .setTaskName(task.getTaskName())
                 .setEventType("TASK_CREATED")
                 .setTaskStatus(task.getStatus())
                 .setWorkflowId(task.getWorkflowId())
@@ -60,7 +60,7 @@ public class KafkaProducer {
     public void sendTaskUpdatedEvent(Task task) {
         TaskEvent.Builder builder = TaskEvent.newBuilder()
                 .setTaskId(task.getTaskId())
-                .setTaskName(task.getDescription())
+                .setTaskName(task.getTaskName())
                 .setEventType("TASK_UPDATED")
                 .setTaskStatus(task.getStatus())
                 .setWorkflowId(task.getWorkflowId())

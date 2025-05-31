@@ -41,6 +41,9 @@ public class KafkaConsumer {
             taskEventDto.setWorkflowId(event.getWorkflowId());
             taskEventDto.setTimestamp(event.getTimestamp());
 
+
+
+
             // Map assigned users from proto to DTO
             List<TaskEventDTO.AssignedUserDTO> assignedUsers = event.getAssignedUsersList().stream().map(protoUser -> {
                 TaskEventDTO.AssignedUserDTO userDto = new TaskEventDTO.AssignedUserDTO();

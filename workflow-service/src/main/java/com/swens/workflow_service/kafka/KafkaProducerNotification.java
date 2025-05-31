@@ -1,75 +1,111 @@
 package com.swens.workflow_service.kafka;
 
+import com.swens.events.TaskEventProto;
 import com.swens.workflow_service.dto.WorkFlowUpdatedDTO;
+import com.swens.workflow_service.model.Task;
+import com.swens.workflow_service.model.Workflow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class KafkaProducerNotification {
 
-    private static final Logger logger = LoggerFactory.getLogger(KafkaProducerNotification.class);
+    private static final Logger log = LoggerFactory.getLogger(KafkaProducerNotification.class);
 
-    private final KafkaTemplate<String, String> kafkaTemplate;
-    private final ObjectMapper objectMapper;
+    private final KafkaTemplate<String, byte[]> kafkaTemplate;
 
     // Kafka topic names
     private static final String TASK_ADDED_TOPIC = "workflow.updated";
     private static final String WORKFLOW_COMPLETED_TOPIC = "workflow.completed";
 
-    public KafkaProducerNotification(KafkaTemplate<String, String> kafkaTemplate, ObjectMapper objectMapper) {
+    public KafkaProducerNotification(KafkaTemplate<String, byte[]> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
-        this.objectMapper = objectMapper;
+    }
+
+    /**
+     * Send task added message to Kafka using protobuf.
+     */
+    public void sendTaskAddedMessage(Workflow workflow, boolean taskExists) {
+        if (workflow.getTasks() == null || workflow.getTasks().isEmpty()) {
+            log.warn("No tasks found in workflow with ID {}", workflow.getWorkflowId());
+            return;
+        }
+
+        String eventType = !taskExists ? "TASK_UPDATED" : "TASK_CREATED";
+
+        for (Task task : workflow.getTasks()) {
+            TaskEventProto.TaskEvent.Builder builder = TaskEventProto.TaskEvent.newBuilder()
+                    .setTaskId(task.getTaskId())
+                    .setEventType(eventType)
+                    .setTaskName(task.getTaskName())
+                    .setTaskStatus(task.getTaskStatus())
+                    .setWorkflowId(workflow.getWorkflowId())
+                    .setTimestamp(System.currentTimeMillis());
+
+            if (task.getAssignedUsers() != null && !task.getAssignedUsers().isEmpty()) {
+                for (Task.AssignedUser user : task.getAssignedUsers()) {
+                    TaskEventProto.AssignedUser protoUser = TaskEventProto.AssignedUser.newBuilder()
+                            .setUserId(user.getUserId())
+                            .setUserName(user.getUserName())
+                            .setEmail(user.getEmail())
+                            .build();
+                    builder.addAssignedUsers(protoUser);
+                }
+            }
+
+            TaskEventProto.TaskEvent event = builder.build();
+
+            try {
+                kafkaTemplate.send(TASK_ADDED_TOPIC, event.toByteArray());
+                log.info("Sent TASK_CREATED event for taskId {}", task.getTaskId());
+
+                if (task.getAssignedUsers() != null && !task.getAssignedUsers().isEmpty()) {
+                    task.getAssignedUsers().forEach(user ->
+                            log.info("Assigned User: ID = {}, Name = {}, Email = {}",
+                                    user.getUserId(), user.getUserName(), user.getEmail())
+                    );
+                } else {
+                    log.info("No assigned users for taskId {}", task.getTaskId());
+                }
+
+            } catch (Exception e) {
+                log.error("Error sending TASK_CREATED event for taskId {}: {}", task.getTaskId(), e.getMessage(), e);
+            }
+        }
     }
 
 
-    public void sendTaskAddedMessage(WorkFlowUpdatedDTO dto, String userName, String email) {
+
+    public void sendWorkflowCompletedMessage(Workflow workflow) {
+        TaskEventProto.TaskEvent.Builder builder = TaskEventProto.TaskEvent.newBuilder()
+                .setTaskId(workflow.getTasks().getFirst().getTaskId())
+                .setEventType("WORKFLOW_COMPLETED")
+                .setTaskName(workflow.getTasks().getFirst().getTaskName())
+                .setTaskStatus("Completed")
+                .setWorkflowId(workflow.getWorkflowId())
+                .setTimestamp(System.currentTimeMillis());
+
+        // Add assigned users from the first task to the protobuf builder
+        for (Task.AssignedUser user : workflow.getTasks().getFirst().getAssignedUsers()) {
+            builder.addAssignedUsers(
+                    TaskEventProto.AssignedUser.newBuilder()
+                            .setUserId(user.getUserId())
+                            .setUserName(user.getUserName())
+                            .setEmail(user.getEmail())
+                            .build()
+            );
+        }
+
+        TaskEventProto.TaskEvent event = builder.build();
+
         try {
-            // Add user info to dto if needed or create a wrapper
-            TaskNotificationMessage message = new TaskNotificationMessage(dto, userName, email);
-
-            String jsonMessage = objectMapper.writeValueAsString(message);
-            kafkaTemplate.send(TASK_ADDED_TOPIC, dto.getTaskId(), jsonMessage);
-            logger.info("Sent task added message for taskId {} to topic {}", dto.getTaskId(), TASK_ADDED_TOPIC);
+            kafkaTemplate.send(WORKFLOW_COMPLETED_TOPIC, event.toByteArray());
+            log.info("Sent WORKFLOW_COMPLETED event for workflowId {}", workflow.getWorkflowId());
         } catch (Exception e) {
-            logger.error("Failed to send task added message", e);
+            log.error("Error sending WORKFLOW_COMPLETED event: {}", event, e);
         }
     }
 
-
-    public void sendWorkflowCompletedMessage(String workflowId) {
-        try {
-            kafkaTemplate.send(WORKFLOW_COMPLETED_TOPIC, workflowId, "Workflow completed: " + workflowId);
-            logger.info("Sent workflow completed message for workflowId {} to topic {}", workflowId, WORKFLOW_COMPLETED_TOPIC);
-        } catch (Exception e) {
-            logger.error("Failed to send workflow completed message", e);
-        }
-    }
-
-    // Inner class representing the structure of a task notification message
-    private static class TaskNotificationMessage {
-        private final WorkFlowUpdatedDTO task;
-        private final String userName;
-        private final String email;
-
-        public TaskNotificationMessage(WorkFlowUpdatedDTO task, String userName, String email) {
-            this.task = task;
-            this.userName = userName;
-            this.email = email;
-        }
-
-        public WorkFlowUpdatedDTO getTask() {
-            return task;
-        }
-
-        public String getUserName() {
-            return userName;
-        }
-
-        public String getEmail() {
-            return email;
-        }
-    }
 }

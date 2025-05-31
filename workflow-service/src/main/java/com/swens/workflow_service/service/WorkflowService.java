@@ -30,13 +30,6 @@ public class WorkflowService {
         this.kafkaProducerNotification = kafkaProducerNotification;
     }
 
-    /**
-     * Add a new task to an existing workflow or update an existing task.
-     * Also sends task update notifications.
-     *
-     * @param workflowId the workflow identifier
-     * @param task       the task to add or update
-     */
     public void addOrUpdateWorkflow(String workflowId, Task task) {
         // Fetch workflow by workflowId (custom business id)
         Workflow workflow = workflowRepository.findByWorkflowId(workflowId);
@@ -50,13 +43,13 @@ public class WorkflowService {
         List<Task.AssignedUser> assignedUsers = task.getAssignedUsers();
 
         // Send notifications with user info if lists align
-        if (assignedUsers != null && dtos != null && assignedUsers.size() == dtos.size()) {
-            for (int i = 0; i < dtos.size(); i++) {
-                WorkFlowUpdatedDTO dto = dtos.get(i);
-                Task.AssignedUser user = assignedUsers.get(i);
-                kafkaProducerNotification.sendTaskAddedMessage(dto, user.getUserName(), user.getEmail());
-            }
-        }
+//        if (assignedUsers != null && dtos != null && assignedUsers.size() == dtos.size()) {
+//            for (int i = 0; i < dtos.size(); i++) {
+//                WorkFlowUpdatedDTO dto = dtos.get(i);
+//                Task.AssignedUser user = assignedUsers.get(i);
+//                kafkaProducerNotification.sendTaskAddedMessage(dto);
+//            }
+//        }
 
         // Update or add task in workflow tasks list
         List<Task> tasks = workflow.getTasks();
@@ -86,9 +79,11 @@ public class WorkflowService {
 
         workflowRepository.save(workflow);
 
+        kafkaProducerNotification.sendTaskAddedMessage(workflow,!taskExists);
+
         // Optionally send workflow completion event if completed 100%
         if (completion == 100) {
-            kafkaProducerNotification.sendWorkflowCompletedMessage(workflow.getWorkflowId());
+            kafkaProducerNotification.sendWorkflowCompletedMessage(workflow);
         }
     }
 
