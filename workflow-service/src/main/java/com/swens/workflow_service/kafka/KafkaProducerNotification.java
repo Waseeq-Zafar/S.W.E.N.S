@@ -42,6 +42,7 @@ public class KafkaProducerNotification {
                     .setTaskName(task.getTaskName())
                     .setTaskStatus(task.getTaskStatus())
                     .setWorkflowId(workflow.getWorkflowId())
+                    .setAdminEmail(task.getAdminEmail())
                     .setTimestamp(System.currentTimeMillis());
 
             if (task.getAssignedUsers() != null && !task.getAssignedUsers().isEmpty()) {
@@ -79,23 +80,42 @@ public class KafkaProducerNotification {
 
 
     public void sendWorkflowCompletedMessage(Workflow workflow) {
+        if (workflow.getTasks() == null || workflow.getTasks().isEmpty()) {
+            log.warn("No tasks available in workflow ID {} to send completion message.", workflow.getWorkflowId());
+            return;
+        }
+
+        Task validTask = workflow.getTasks().stream()
+                .filter(task -> task.getAdminEmail() != null && !task.getAdminEmail().trim().isEmpty())
+                .findFirst()
+                .orElse(null);
+
+        if (validTask == null) {
+            log.error("No valid task with adminEmail found in workflowId {}. Skipping message.", workflow.getWorkflowId());
+            return;
+        }
+
         TaskEventProto.TaskEvent.Builder builder = TaskEventProto.TaskEvent.newBuilder()
-                .setTaskId(workflow.getTasks().getFirst().getTaskId())
+                .setTaskId(validTask.getTaskId())
                 .setEventType("WORKFLOW_COMPLETED")
-                .setTaskName(workflow.getTasks().getFirst().getTaskName())
+                .setTaskName(validTask.getTaskName())
                 .setTaskStatus("Completed")
                 .setWorkflowId(workflow.getWorkflowId())
+                .setAdminEmail(workflow.getAdminEmail())
                 .setTimestamp(System.currentTimeMillis());
 
-        // Add assigned users from the first task to the protobuf builder
-        for (Task.AssignedUser user : workflow.getTasks().getFirst().getAssignedUsers()) {
-            builder.addAssignedUsers(
-                    TaskEventProto.AssignedUser.newBuilder()
-                            .setUserId(user.getUserId())
-                            .setUserName(user.getUserName())
-                            .setEmail(user.getEmail())
-                            .build()
-            );
+        if (validTask.getAssignedUsers() != null && !validTask.getAssignedUsers().isEmpty()) {
+            for (Task.AssignedUser user : validTask.getAssignedUsers()) {
+                builder.addAssignedUsers(
+                        TaskEventProto.AssignedUser.newBuilder()
+                                .setUserId(user.getUserId())
+                                .setUserName(user.getUserName())
+                                .setEmail(user.getEmail())
+                                .build()
+                );
+            }
+        } else {
+            log.info("No assigned users for taskId {}", validTask.getTaskId());
         }
 
         TaskEventProto.TaskEvent event = builder.build();
@@ -104,7 +124,7 @@ public class KafkaProducerNotification {
             kafkaTemplate.send(WORKFLOW_COMPLETED_TOPIC, event.toByteArray());
             log.info("Sent WORKFLOW_COMPLETED event for workflowId {}", workflow.getWorkflowId());
         } catch (Exception e) {
-            log.error("Error sending WORKFLOW_COMPLETED event: {}", event, e);
+            log.error("Error sending WORKFLOW_COMPLETED event for workflowId {}: {}", workflow.getWorkflowId(), e.getMessage(), e);
         }
     }
 

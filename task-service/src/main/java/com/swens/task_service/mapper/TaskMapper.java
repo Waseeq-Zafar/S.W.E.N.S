@@ -1,9 +1,6 @@
 package com.swens.task_service.mapper;
 
-import com.swens.task_service.dto.AssignedUserDTO;
-import com.swens.task_service.dto.TaskRequestDTO;
-import com.swens.task_service.dto.TaskResponseDTO;
-import com.swens.task_service.dto.TaskUpdateDTO;
+import com.swens.task_service.dto.*;
 import com.swens.task_service.model.Task;
 import com.swens.task_service.util.TimeUtil;
 
@@ -59,6 +56,7 @@ public class TaskMapper {
         dto.setDueDate(TimeUtil.formatInstantToIST(task.getDueDate()));
         dto.setWorkflowId(task.getWorkflowId());
         dto.setTaskName(task.getTaskName());
+        dto.setAdminEmail(task.getAdminEmail());
 
         return dto;
     }
@@ -86,5 +84,41 @@ public class TaskMapper {
             );
         }
         task.setUpdatedAt(TimeUtil.nowUTC());
+    }
+
+    public static void updateUserEntity(Task task, TaskUserUpdateDTO dto) {
+
+        if (dto.getStatus() != null && !dto.getStatus().isBlank()) {
+            task.setStatus(dto.getStatus());
+        }
+
+        if (dto.getDescription() != null && !dto.getDescription().isBlank()) {
+            task.setDescription(dto.getDescription());
+        }
+
+    }
+
+    public static TaskUserInfoDTO toUserDTO(Task task) {
+        TaskUserInfoDTO dto = new TaskUserInfoDTO();
+
+        dto.setTaskId(task.getTaskId());
+        dto.setStatus(task.getStatus());
+        dto.setDescription(task.getDescription());
+        dto.setAssignedUsers(
+                task.getAssignedUsers() != null
+                        ? task.getAssignedUsers().stream()
+                        .map(user -> new AssignedUserDTO(user.getUserId(),
+                                user.getUserName(),
+                                user.getEmail()))
+                        .collect(Collectors.toList())
+                        : null
+        );
+        dto.setCreatedAt(TimeUtil.formatInstantToIST(task.getCreatedAt()));
+        dto.setUpdatedAt(TimeUtil.formatInstantToIST(task.getUpdatedAt()));
+        dto.setDueDate(TimeUtil.formatInstantToIST(task.getDueDate()));
+        dto.setWorkflowId(task.getWorkflowId());
+        dto.setTaskName(task.getTaskName());
+
+        return dto;
     }
 }

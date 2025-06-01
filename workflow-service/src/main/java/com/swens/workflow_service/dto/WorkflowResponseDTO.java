@@ -7,6 +7,7 @@ public class WorkflowResponseDTO {
     private long createdAt;
     private long updatedAt;
     private int completionPercentage;
+    private String adminEmail;
 
 
 
@@ -49,5 +50,8 @@ public class WorkflowResponseDTO {
 
     public void setCompletionPercentage(int completionPercentage) { this.completionPercentage = completionPercentage; }
 
+    public String getAdminEmail( String adminEmail) { return this.adminEmail; }
+
+    public void setAdminEmail(String adminEmail) { this.adminEmail = adminEmail; }
 
 }

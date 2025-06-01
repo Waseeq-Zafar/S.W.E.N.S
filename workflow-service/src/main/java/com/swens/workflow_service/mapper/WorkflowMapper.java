@@ -19,6 +19,8 @@ public class WorkflowMapper {
         dto.setWorkflowId(workflow.getWorkflowId());
         dto.setCreatedAt(workflow.getCreatedAt());
         dto.setUpdatedAt(workflow.getUpdatedAt());
+        dto.getAdminEmail(workflow.getAdminEmail());
+
         return dto;
     }
 
@@ -28,6 +30,7 @@ public class WorkflowMapper {
         task.setTaskStatus(dto.getTaskStatus());
         task.setWorkflowId(dto.getWorkflowId());
         task.setTaskName(dto.getTaskName());
+        task.setAdminEmail(dto.getAdminEmail());
         List<Task.AssignedUser> assignedUsers = dto.getAssignedUsers().stream().map(userDto -> {
             Task.AssignedUser user = new Task.AssignedUser();
             user.setUserId(userDto.getUserId());
@@ -49,6 +52,7 @@ public class WorkflowMapper {
         dto.setUpdatedAt(Instant.ofEpochMilli(task.getTimestamp()));
         dto.setDueDate(Instant.ofEpochMilli(task.getTimestamp()));
         dto.setTaskName(task.getTaskName());
+        dto.setAdminEmail(task.getAdminEmail());
 
         // Convert assigned users
         List<WorkFlowUpdatedDTO.AssignedUser> assignedUsers = task.getAssignedUsers().stream().map(user ->

@@ -43,6 +43,21 @@ public class Task {
     @NotNull(message = "Task Name is required")
     private String taskName;
 
+    @NotNull(message = "Admin Email ID is required")
+    private String adminEmail;
+
+
+
+    public String getAdminEmail() {
+        return adminEmail;
+    }
+
+    public void setAdminEmail(String adminEmail) {
+        this.adminEmail = adminEmail;
+    }
+
+
+
 
     public String getTaskName() {
         return taskName;

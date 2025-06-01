@@ -25,7 +25,8 @@ public class KafkaProducer {
                 .setEventType("TASK_CREATED")
                 .setTaskStatus(task.getStatus())
                 .setWorkflowId(task.getWorkflowId())
-                .setTimestamp(System.currentTimeMillis());
+                .setTimestamp(System.currentTimeMillis())
+                .setAdminEmail(task.getAdminEmail());
 
         if (task.getAssignedUsers() != null && !task.getAssignedUsers().isEmpty()) {
             for (com.swens.task_service.model.Task.AssignedUser user : task.getAssignedUsers()) {
@@ -64,6 +65,7 @@ public class KafkaProducer {
                 .setEventType("TASK_UPDATED")
                 .setTaskStatus(task.getStatus())
                 .setWorkflowId(task.getWorkflowId())
+                .setAdminEmail(task.getAdminEmail())
                 .setTimestamp(System.currentTimeMillis());
 
         if (task.getAssignedUsers() != null && !task.getAssignedUsers().isEmpty()) {

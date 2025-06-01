@@ -16,6 +16,7 @@ public class Workflow {
     private long updatedAt;
     private List<Task> tasks;
     private int completionPercentage;
+    private String adminEmail;
 
 
 
@@ -86,4 +87,6 @@ public class Workflow {
         this.completionPercentage = completionPercentage;
     }
 
+    public String getAdminEmail() { return adminEmail; }
+    public void setAdminEmail(String adminEmail) { this.adminEmail = adminEmail; }
 }
