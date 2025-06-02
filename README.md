@@ -183,11 +183,11 @@ Replace "email-address-here" with your actual sender email address.
 
 # 3. Start the backend server by writing following command from main directory of your project which is S.W.E.N.S and look for docker-compose.yml file present there, then run following command
 docker-compose up --build
+```
+---
 
-
-
-📚 API Documentation
-For complete API specifications and interactive testing:
+## 📚 API Documentation
+### For complete API specifications and interactive testing:
 
 ➡️ Visit the API_DOCS folder and run the api.html file
 📎 API Documentation
@@ -220,3 +220,4 @@ git commit -m 'Add AmazingFeature'
 git push origin feature/AmazingFeature
 
 # Open a Pull Request
+```
