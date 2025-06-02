@@ -118,7 +118,7 @@ SWENS addresses these challenges through:
 
 ### Installation
 
-```bash
+
 # 1. Clone repository
 git clone https://github.com/Waseeq-Zafar/S.W.E.N.S.git
 cd S.W.E.N.S
@@ -183,7 +183,7 @@ Replace "email-address-here" with your actual sender email address.
 
 # 3. Start the backend server by writing following command from main directory of your project which is S.W.E.N.S and look for docker-compose.yml file present there, then run following command
 docker-compose up --build
-```
+
 ---
 
 ## 📚 API Documentation
