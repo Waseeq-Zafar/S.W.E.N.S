@@ -123,7 +123,7 @@ SWENS addresses these challenges through:
 git clone https://github.com/Waseeq-Zafar/S.W.E.N.S.git
 cd S.W.E.N.S
 
-<hr style="width:30%; margin-top: 10px; margin-bottom: 10px; border: 0.5px solid #ccc;" />
+<hr style="width:1px; margin-top: 10px; margin-bottom: 10px; border: 0.5px solid #ccc;" />
 
 
 
