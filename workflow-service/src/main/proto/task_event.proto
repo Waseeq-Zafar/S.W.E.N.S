@@ -19,4 +19,5 @@ message TaskEvent {
   string taskStatus = 5;
   string workflowId = 6;
   int64 timestamp = 7;
+  string adminEmail = 8;
 }

@@ -54,6 +54,7 @@ public class KafkaConsumer {
             taskEventModel.setTaskStatus(event.getTaskStatus());
             taskEventModel.setWorkflowId(event.getWorkflowId());
             taskEventModel.setTimestamp(event.getTimestamp());
+            taskEventModel.setAdminEmail(event.getAdminEmail());
 
             List<TaskEventModel.AssignedUser> assignedUsers = event.getAssignedUsersList().stream().map(protoUser -> {
                 TaskEventModel.AssignedUser user = new TaskEventModel.AssignedUser();
@@ -82,6 +83,7 @@ public class KafkaConsumer {
             bodyBuilder.append("Task Status: ").append(taskEventModel.getTaskStatus()).append("\n");
             bodyBuilder.append("Workflow ID: ").append(taskEventModel.getWorkflowId()).append("\n");
             bodyBuilder.append("Timestamp (IST): ").append(formattedTimestamp).append("\n\n");
+            bodyBuilder.append("Admin Email: ").append(taskEventModel.getAdminEmail()).append("\n\n");
 
             bodyBuilder.append("Assigned Users:\n");
             for (TaskEventModel.AssignedUser user : assignedUsers) {
@@ -95,6 +97,12 @@ public class KafkaConsumer {
             for (TaskEventModel.AssignedUser user : assignedUsers) {
                 System.out.println("Sending email to: " + user.getEmail());
                 emailService.sendTaskNotification(user.getEmail(), subject, body);
+            }
+
+
+            if(taskEventModel.getTaskStatus().equalsIgnoreCase("completed")) {
+                System.out.println("Sending email to admin: " + taskEventModel.getAdminEmail());
+                emailService.sendTaskNotification(taskEventModel.getAdminEmail(), subject, body);
             }
 
         } catch (Exception e) {

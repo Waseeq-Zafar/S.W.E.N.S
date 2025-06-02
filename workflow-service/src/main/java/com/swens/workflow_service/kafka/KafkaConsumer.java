@@ -40,6 +40,7 @@ public class KafkaConsumer {
             taskEventDto.setTaskStatus(event.getTaskStatus());
             taskEventDto.setWorkflowId(event.getWorkflowId());
             taskEventDto.setTimestamp(event.getTimestamp());
+            taskEventDto.setAdminEmail(event.getAdminEmail());
 
 
 

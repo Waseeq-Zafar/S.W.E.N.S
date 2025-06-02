@@ -5,6 +5,10 @@ import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFac
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Component
 public class RoleFilterGatewayFilterFactory extends AbstractGatewayFilterFactory<RoleFilterGatewayFilterFactory.Config> {
 
@@ -15,15 +19,21 @@ public class RoleFilterGatewayFilterFactory extends AbstractGatewayFilterFactory
     @Override
     public GatewayFilter apply(Config config) {
         return (exchange, chain) -> {
-            String role = exchange.getRequest().getHeaders().getFirst("X-ROLE");
+            List<String> allowedRoles = Arrays.stream(config.requiredRole.split(","))
+                    .map(String::toLowerCase)
+                    .toList();
 
-            if (role == null || !role.equalsIgnoreCase(config.getRequiredRole())) {
+            String roleHeader = exchange.getRequest().getHeaders().getFirst("X-ROLE");
+
+            if (roleHeader == null || !allowedRoles.contains(roleHeader.toLowerCase())) {
                 exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
                 return exchange.getResponse().setComplete();
             }
+
             return chain.filter(exchange);
         };
     }
+
 
     public static class Config {
         private String requiredRole;

@@ -1,11 +1,8 @@
 package com.swens.task_service.dto;
 
-import jakarta.validation.constraints.NotNull;
-
 import java.util.List;
 
-public class TaskResponseDTO {
-
+public class TaskUserInfoDTO {
     private String taskId;
     private String description;
     private String status;
@@ -14,20 +11,7 @@ public class TaskResponseDTO {
     private String createdAt;    // changed from Instant to String
     private String updatedAt;    // changed from Instant to String
     private String workflowId;  // <-- Added this field
-    private List<String> unavailableUsers;
     private String taskName;
-    @NotNull(message = "Admin Email ID is required")
-    private String adminEmail;
-
-
-
-    public String getAdminEmail() {
-        return adminEmail;
-    }
-
-    public void setAdminEmail(String adminEmail) {
-        this.adminEmail = adminEmail;
-    }
 
     public String getTaskName() {
         return taskName;
@@ -37,9 +21,6 @@ public class TaskResponseDTO {
         this.taskName = taskName;
     }
 
-
-
-    // Getters
     public String getStatus() {
         return status;
     }
@@ -72,13 +53,6 @@ public class TaskResponseDTO {
         return workflowId;
     }
 
-    public void setUnavailableUsers(List<String> unavailableUsers) {
-        this.unavailableUsers = unavailableUsers;
-    }
-
-
-
-    // Setters
     public void setTaskId(String taskId) {
         this.taskId = taskId;
     }
@@ -110,11 +84,4 @@ public class TaskResponseDTO {
     public void setWorkflowId(String workflowId) {
         this.workflowId = workflowId;
     }
-
-    public List<String> getUnavailableUsers() {
-        return unavailableUsers;
-    }
-
-
-
 }

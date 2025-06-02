@@ -1,9 +1,6 @@
 package com.swens.task_service.service;
 
-import com.swens.task_service.dto.TaskRequestDTO;
-import com.swens.task_service.dto.TaskResponseDTO;
-import com.swens.task_service.dto.TaskUpdateDTO;
-import com.swens.task_service.dto.UserInfoDTO;
+import com.swens.task_service.dto.*;
 import com.swens.task_service.exception.NoAssignedUserException;
 import com.swens.task_service.exception.NoUserAvailableException;
 import com.swens.task_service.exception.TaskNotFoundException;
@@ -12,6 +9,7 @@ import com.swens.task_service.kafka.KafkaProducer;
 import com.swens.task_service.mapper.TaskMapper;
 import com.swens.task_service.model.Task;
 import com.swens.task_service.repository.TaskRepository;
+import jakarta.validation.Valid;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -72,9 +70,11 @@ public class TaskService {
         return users;
     }
 
-    public TaskResponseDTO createTask(TaskRequestDTO requestDTO) {
+    public TaskResponseDTO createTask(String email, TaskRequestDTO requestDTO) {
         Task task = TaskMapper.toEntity(requestDTO);
         List<Task.AssignedUser> incomingUsers = task.getAssignedUsers();
+
+
 
         if (incomingUsers == null || incomingUsers.isEmpty()) {
             throw new NoAssignedUserException("Task must have at least one assigned user.");
@@ -97,6 +97,8 @@ public class TaskService {
             }
         }
 
+        System.out.println(assignedUsers);
+
         if (assignedUsers.isEmpty()) {
             String msg = "No available users to assign the task. Details: " + String.join(", ", unavailableUsers);
             throw new NoUserAvailableException(msg);
@@ -104,6 +106,7 @@ public class TaskService {
 
         // Assign all available users
         task.setAssignedUsers(assignedUsers);
+        task.setAdminEmail(email);
 
         Task saved = taskRepository.save(task);
 
@@ -221,4 +224,57 @@ public class TaskService {
                 .map(TaskMapper::toDTO)
                 .collect(Collectors.toList());
     }
+
+    public List<TaskUserInfoDTO> getUserTasks(String email) {
+        List<Task> tasks = taskRepository.findByAssignedUsersEmail(email);
+        return tasks.stream()
+                .map(TaskMapper::toUserDTO)
+                .toList();
+    }
+
+    public TaskUserInfoDTO updateUserTasks(String id, TaskUserUpdateDTO updateDTO) {
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() -> new TaskNotFoundException("Task not found"));
+
+        List<Task.AssignedUser> oldAssignedUsers = new ArrayList<>(task.getAssignedUsers());
+
+        String updatedStatus = updateDTO.getStatus() != null ? updateDTO.getStatus().toLowerCase() : "";
+
+        // Update task entity using mapper
+        TaskMapper.updateUserEntity(task, updateDTO);
+
+        if (updatedStatus.equals("completed")) {
+            for (Task.AssignedUser oldUser : oldAssignedUsers) {
+//                userTaskMap.put(oldUser.getUserId(), NOT_ASSIGNED);
+                hashOpsStatus.put(USER_TASK_MAP, oldUser.getUserId(), NOT_ASSIGNED);
+            }
+            // DO NOT clear assignedUsers
+        }
+
+        Task updated = taskRepository.save(task);
+
+        if (!updatedStatus.equals("completed")) {
+            List<Task.AssignedUser> newAssignedUsers = updated.getAssignedUsers();
+
+            for (Task.AssignedUser user : newAssignedUsers) {
+//                userTaskMap.put(user.getUserId(), ASSIGNED);
+                hashOpsStatus.put(USER_TASK_MAP, user.getUserId(), ASSIGNED);
+            }
+
+            for (Task.AssignedUser oldUser : oldAssignedUsers) {
+                boolean stillAssigned = newAssignedUsers.stream()
+                        .anyMatch(newUser -> newUser.getUserId().equals(oldUser.getUserId()));
+                if (!stillAssigned) {
+//                    userTaskMap.put(oldUser.getUserId(), NOT_ASSIGNED);
+                    hashOpsStatus.put(USER_TASK_MAP, oldUser.getUserId(), NOT_ASSIGNED);
+                }
+            }
+        }
+
+        kafkaProducer.sendTaskUpdatedEvent(updated);
+
+        return TaskMapper.toUserDTO(updated);
+    }
+
+
 }

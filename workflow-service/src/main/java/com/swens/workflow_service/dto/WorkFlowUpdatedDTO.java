@@ -13,6 +13,7 @@ public class WorkFlowUpdatedDTO {
     private Instant dueDate;
     private String workflowId;
     private String taskName;
+    private String adminEmail;
 
 
     public String getTaskName() {
@@ -119,4 +120,7 @@ public class WorkFlowUpdatedDTO {
     public void setWorkflowId(String workflowId) {
         this.workflowId = workflowId;
     }
+
+    public String getAdminEmail() { return adminEmail; }
+    public void setAdminEmail(String adminEmail) { this.adminEmail = adminEmail; }
 }

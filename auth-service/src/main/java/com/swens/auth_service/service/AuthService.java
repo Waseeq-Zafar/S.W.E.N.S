@@ -167,4 +167,8 @@ public class AuthService {
     public String getRole(String token) {
         return jwtUtil.extractRoleFromToken(token);
     }
+
+    public String getEmail(String token) {
+        return jwtUtil.extractEmailFromToken(token);
+    }
 }

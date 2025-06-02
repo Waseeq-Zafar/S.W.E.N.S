@@ -77,7 +77,10 @@ public class WorkflowService {
         int completion = calculateWorkflowCompletion(workflow);
         workflow.setCompletionPercentage(completion);
 
+        workflow.setAdminEmail(task.getAdminEmail());
+
         workflowRepository.save(workflow);
+
 
         kafkaProducerNotification.sendTaskAddedMessage(workflow,!taskExists);
 

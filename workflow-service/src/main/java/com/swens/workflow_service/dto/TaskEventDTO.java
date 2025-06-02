@@ -1,5 +1,7 @@
 package com.swens.workflow_service.dto;
 
+import org.apache.kafka.common.protocol.types.Field;
+
 import java.util.List;
 
 public class TaskEventDTO {
@@ -11,6 +13,7 @@ public class TaskEventDTO {
     private String eventType;
     private String taskStatus;
     private long timestamp;
+    private String adminEmail;
 
     public TaskEventDTO() {
     }
@@ -72,6 +75,11 @@ public class TaskEventDTO {
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
+
+    public String getAdminEmail() { return adminEmail; }
+
+    public void setAdminEmail(String adminEmail) { this.adminEmail = adminEmail; }
+
 
     // Inner class for assigned user details
     public static class AssignedUserDTO {

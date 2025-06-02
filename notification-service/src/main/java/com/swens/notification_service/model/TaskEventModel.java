@@ -1,5 +1,7 @@
 package com.swens.notification_service.model;
 
+import org.apache.kafka.common.protocol.types.Field;
+
 import java.util.List;
 
 public class TaskEventModel {
@@ -10,12 +12,13 @@ public class TaskEventModel {
     private String eventType;
     private String taskStatus;
     private long timestamp;
+    private String adminEmail;
 
     public TaskEventModel() {
     }
 
     public TaskEventModel(String taskId, String taskName, List<AssignedUser> assignedUsers,
-                          String workflowId, String eventType, String taskStatus, long timestamp) {
+                          String workflowId, String eventType, String taskStatus, long timestamp, String adminEmail) {
         this.taskId = taskId;
         this.taskName = taskName;
         this.assignedUsers = assignedUsers;
@@ -23,6 +26,7 @@ public class TaskEventModel {
         this.eventType = eventType;
         this.taskStatus = taskStatus;
         this.timestamp = timestamp;
+        this.adminEmail = adminEmail;
     }
 
     // Getters and setters
@@ -82,6 +86,10 @@ public class TaskEventModel {
         this.timestamp = timestamp;
     }
 
+    public String getAdminEmail() { return adminEmail; }
+
+    public void setAdminEmail(String adminEmail) { this.adminEmail = adminEmail; }
+
     @Override
     public String toString() {
         return "TaskEventModel{" +
@@ -92,6 +100,7 @@ public class TaskEventModel {
                 ", eventType='" + eventType + '\'' +
                 ", taskStatus='" + taskStatus + '\'' +
                 ", timestamp=" + timestamp +
+                ", adminEmail='" + adminEmail + '\'' +
                 '}';
     }
 

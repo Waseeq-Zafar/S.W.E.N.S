@@ -48,7 +48,10 @@ public class JwtValidationGatewayFilterFactory extends AbstractGatewayFilterFact
                         if (authResponse != null && authResponse.getRole() != null && !authResponse.getRole().isEmpty()) {
                             // Add X-ROLE header for downstream filters
                             ServerWebExchange mutatedExchange = exchange.mutate()
-                                    .request(builder -> builder.header("X-ROLE", authResponse.getRole()))
+                                    .request(builder -> builder
+                                            .header("X-ROLE", authResponse.getRole())
+                                            .header("X-EMAIL", authResponse.getEmail())
+                                    )
                                     .build();
                             return chain.filter(mutatedExchange);
                         } else {
@@ -67,11 +70,17 @@ public class JwtValidationGatewayFilterFactory extends AbstractGatewayFilterFact
     private static class AuthResponse {
         private String message;
         private String role;
+        private String email;
 
         public String getMessage() { return message; }
         public void setMessage(String message) { this.message = message; }
 
         public String getRole() { return role; }
         public void setRole(String role) { this.role = role; }
+
+        public String getEmail() { return email; }  // ⬅️ Getter
+        public void setEmail(String email) { this.email = email; }
+
+
     }
 }

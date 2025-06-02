@@ -44,9 +44,13 @@ public class AuthController {
 
         if (isValid) {
             String role = authService.getRole(token);
+            String email = authService.getEmail(token);  // <---- You need to implement this method in authService
+
             Map<String, String> response = new HashMap<>();
             response.put("message", "Token is valid");
             response.put("role", role);
+            response.put("email", email);   // Add email to the response
+
             return ResponseEntity.ok(response);
         } else {
             Map<String, String> response = new HashMap<>();
@@ -54,6 +58,7 @@ public class AuthController {
             return ResponseEntity.status(401).body(response);
         }
     }
+
 
     /**
      * Refresh access token using a refresh token.

@@ -14,4 +14,7 @@ public interface TaskRepository extends MongoRepository<Task, String> {
 
     // Custom finder: get tasks where a user is assigned
     List<Task> findByAssignedUsersUserId(String userId);
+
+    List<Task> findByAssignedUsersEmail(String email);
+
 }
