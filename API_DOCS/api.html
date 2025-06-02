@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SWENS API Documentation</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        padding: 40px;
+        backdrop-filter: blur(10px);
+      }
+
+      h1 {
+        color: #2c3e50;
+        text-align: center;
+        margin-bottom: 40px;
+        font-size: 2.5em;
+        font-weight: 700;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .service-section {
+        margin-bottom: 50px;
+        border: 2px solid #e0e6ed;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+      }
+
+      .service-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px 30px;
+        font-size: 1.8em;
+        font-weight: 600;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+      }
+
+      .service-content {
+        background: #fafbfc;
+        padding: 30px;
+      }
+
+      .endpoint {
+        background: white;
+        border-radius: 12px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        border-left: 5px solid #667eea;
+      }
+
+      .endpoint-header {
+        background: linear-gradient(135deg, #f8f9ff 0%, #e8ecff 100%);
+        padding: 20px 25px;
+        border-bottom: 1px solid #e1e8ed;
+      }
+
+      .method {
+        display: inline-block;
+        padding: 8px 16px;
+        border-radius: 25px;
+        font-weight: 700;
+        font-size: 0.9em;
+        margin-right: 15px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .method.post {
+        background: #28a745;
+        color: white;
+      }
+
+      .method.get {
+        background: #007bff;
+        color: white;
+      }
+
+      .method.put {
+        background: #ffc107;
+        color: #212529;
+      }
+
+      .method.delete {
+        background: #dc3545;
+        color: white;
+      }
+
+      .url {
+        font-family: "Courier New", monospace;
+        background: #f1f3f4;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 0.9em;
+        color: #2c3e50;
+        border: 1px solid #d1d9e0;
+      }
+
+      .endpoint-title {
+        font-size: 1.3em;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 10px;
+      }
+
+      .endpoint-body {
+        padding: 25px;
+      }
+
+      .section-title {
+        font-size: 1.1em;
+        font-weight: 600;
+        margin: 20px 0 10px 0;
+        color: #495057;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .json-block {
+        background: #282c34;
+        color: #abb2bf;
+        padding: 20px;
+        border-radius: 8px;
+        font-family: "Courier New", monospace;
+        font-size: 0.85em;
+        overflow-x: auto;
+        margin: 10px 0;
+        border: 1px solid #3e4451;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .json-key {
+        color: #e06c75;
+      }
+
+      .json-string {
+        color: #98c379;
+      }
+
+      .json-number {
+        color: #d19a66;
+      }
+
+      .json-boolean {
+        color: #56b6c2;
+      }
+
+      .response-status {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 15px;
+        font-weight: 600;
+        font-size: 0.85em;
+        margin: 5px 5px 5px 0;
+      }
+
+      .status-200 {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+
+      .status-400 {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+
+      .status-401 {
+        background: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeaa7;
+      }
+
+      .status-403 {
+        background: #f1c0c7;
+        color: #6f1a21;
+        border: 1px solid #f5c6cb;
+      }
+
+      .status-404 {
+        background: #d1ecf1;
+        color: #0c5460;
+        border: 1px solid #b8daff;
+      }
+
+      .note {
+        background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+        border-left: 4px solid #ffc107;
+        padding: 15px 20px;
+        margin: 15px 0;
+        border-radius: 0 8px 8px 0;
+        color: #856404;
+        font-style: italic;
+      }
+
+      .auth-info {
+        background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        border-left: 4px solid #28a745;
+        padding: 15px 20px;
+        margin: 15px 0;
+        border-radius: 0 8px 8px 0;
+        color: #155724;
+        font-weight: 500;
+      }
+
+      .toc {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 40px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      }
+
+      .toc h2 {
+        color: #2c3e50;
+        margin-bottom: 20px;
+        font-size: 1.5em;
+      }
+
+      .toc ul {
+        list-style: none;
+        padding-left: 0;
+      }
+
+      .toc li {
+        margin-bottom: 8px;
+      }
+
+      .toc a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
+      }
+
+      .toc a:hover {
+        color: #764ba2;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 20px;
+          margin: 10px;
+        }
+
+        h1 {
+          font-size: 2em;
+        }
+
+        .endpoint-header {
+          padding: 15px;
+        }
+
+        .method {
+          display: block;
+          margin-bottom: 10px;
+          text-align: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>SWENS API Documentation</h1>
+
+      <div class="toc">
+        <h2>📋 Table of Contents</h2>
+        <ul>
+          <li><a href="#user">👤 User Service</a></li>
+          <li><a href="#auth">🔐 Authentication Service</a></li>
+          <li><a href="#task">📋 Task Service</a></li>
+          <li><a href="#workflow">🔄 Workflow Service</a></li>
+        </ul>
+      </div>
+
+      <!-- User Service -->
+      <div class="service-section" id="user">
+        <div class="service-header">👤 User Service</div>
+        <div class="service-content">
+          <!-- Signup -->
+          <div class="endpoint">
+            <div class="endpoint-header">
+              <div class="endpoint-title">User Registration</div>
+              <span class="method post">POST</span>
+              <span class="url">http://localhost:8080/users</span>
+            </div>
+            <div class="endpoint-body">
+              <div class="section-title">Request Body:</div>
+              <div class="json-block">
+                { <span class="json-key">"name"</span>:
+                <span class="json-string">"Test1"</span>,
+                <span class="json-key">"email"</span>:
+                <span class="json-string">"test1@gmail.com"</span>,
+                <span class="json-key">"password"</span>:
+                <span class="json-string">"test2@123"</span>,
+                <span class="json-key">"role"</span>:
+                <span class="json-string">"user"</span> }
+              </div>
+
+              <div class="section-title">Responses:</div>
+              <span class="response-status status-200">200 Success</span>
+              <div class="json-block">
+                { <span class="json-key">"id"</span>:
+                <span class="json-string"
+                  >"2211578c-15e5-410a-9aac-1fc2827d1db0"</span
+                >, <span class="json-key">"email"</span>:
+                <span class="json-string">"temp4@gmail.com"</span>,
+                <span class="json-key">"password"</span>:
+                <span class="json-string"
+                  >"$2a$10$TWNO.OH7pPlcbBGjyzTMkupgDGalAbzocokT9JaZRI/XLKgEX99gi"</span
+                >, <span class="json-key">"role"</span>:
+                <span class="json-string">"user"</span> }
+              </div>
+
+              <span class="response-status status-400">400 Bad Request</span>
+              <div class="json-block">
+                { <span class="json-key">"message"</span>:
+                <span class="json-string">"Email address already exists"</span>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Authentication Service -->
+      <div class="service-section" id="auth">
+        <div class="service-header">🔐 Authentication Service</div>
+        <div class="service-content">
+          <!-- Login -->
+          <div class="endpoint">
+            <div class="endpoint-header">
+              <div class="endpoint-title">User Login</div>
+              <span class="method post">POST</span>
+              <span class="url">http://localhost:8080/auth/login</span>
+            </div>
+            <div class="endpoint-body">
+              <div class="section-title">Request Body:</div>
+              <div class="json-block">
+                { <span class="json-key">"email"</span>:
+                <span class="json-string">"test1@gmail.com"</span>,
+                <span class="json-key">"password"</span>:
+                <span class="json-string">"test1@123"</span> }
+              </div>
+
+              <div class="section-title">Responses:</div>
+              <span class="response-status status-200">200 Success</span>
+              <span class="response-status status-401">401 Unauthorized</span>
+              <div class="json-block">
+                { <span class="json-key">"name"</span>:
+                <span class="json-string">"Test1"</span>,
+                <span class="json-key">"accessToken"</span>:
+                <span class="json-string">"accessToken"</span>,
+                <span class="json-key">"refreshToken"</span>:
+                <span class="json-string">"refreshToken"</span> }
+              </div>
+            </div>
+          </div>
+
+          <!-- Token Validation -->
+          <div class="endpoint">
+            <div class="endpoint-header">
+              <div class="endpoint-title">Token Validation</div>
+              <span class="method get">GET</span>
+              <span class="url">http://localhost:8080/auth/validate</span>
+            </div>
+            <div class="endpoint-body">
+              <div class="auth-info">
+                <strong>Authentication Required:</strong> Include accessToken in
+                Headers
+              </div>
+
+              <div class="section-title">Responses:</div>
+              <span class="response-status status-200">200 Success</span>
+              <span class="response-status status-401">401 Unauthorized</span>
+              <div class="json-block">
+                { <span class="json-key">"role"</span>:
+                <span class="json-string">"admin"</span>,
+                <span class="json-key">"message"</span>:
+                <span class="json-string">"Token is valid"</span>,
+                <span class="json-key">"email"</span>:
+                <span class="json-string">"email"</span> }
+              </div>
+            </div>
+          </div>
+
+          <!-- Refresh Token -->
+          <div class="endpoint">
+            <div class="endpoint-header">
+              <div class="endpoint-title">Refresh Token Generation</div>
+              <span class="method post">POST</span>
+              <span class="url">http://localhost:8080/auth/refresh</span>
+            </div>
+            <div class="endpoint-body">
+              <div class="section-title">Request Body:</div>
+              <div class="json-block">
+                { <span class="json-key">"refreshToken"</span>:
+                <span class="json-string">"token"</span> }
+              </div>
+
+              <div class="section-title">Responses:</div>
+              <span class="response-status status-200">200 Success</span>
+              <span class="response-status status-401">401 Unauthorized</span>
+              <div class="json-block">
+                { <span class="json-key">"name"</span>:
+                <span class="json-string">"email"</span>,
+                <span class="json-key">"accessToken"</span>:
+                <span class="json-string">"accessToken"</span>,
+                <span class="json-key">"refreshToken"</span>:
+                <span class="json-string">"refreshToken"</span> }
+              </div>
+              <div class="note">
+                <strong>Note:</strong> Minor naming convention issue - name
+                field contains email value
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task Service -->
+      <div class="service-section" id="task">
+        <div class="service-header">📋 Task Service</div>
+        <div class="service-content">
+          <div class="auth-info">
+            <strong>Authentication Required:</strong> Pass accessToken as Bearer
+            token in all requests<br />
+            <strong>Response Codes:</strong> 200 OK, 401 Unauthorized, 403
+            Forbidden (for user access), 404 Not Found
+          </div>
+
+          <h3 style="color: #e74c3c; margin: 30px 0 20px 0; font-size: 1.4em">
+            🛡️ Admin Specific Endpoints
+          </h3>
+
+          <!-- Get All Users -->
+          <div class="endpoint">
+            <div class="endpoint-header">
+              <div class="endpoint-title">Get All Users by Role</div>
+              <span class="method get">GET</span>
+              <span class="url"
+                >http://localhost:8080/task/admin/role?role=user</span
+              >
+            </div>
+            <div class="endpoint-body">
+              <div class="note">
+                <strong>Purpose:</strong> Retrieves all users from database to
+                store in Redis for task assignment
+              </div>
+              <div class="section-title">Query Parameters:</div>
+              <div class="json-block">
+                role=user (passed as query parameter, not in body)
+              </div>
+
+              <div class="section-title">Response:</div>
+              <div class="json-block">
+                [ { <span class="json-key">"id"</span>:
+                <span class="json-string"
+                  >"2211578c-15e5-410a-9aac-1fc2827d1db0"</span
+                >, <span class="json-key">"name"</span>:
+                <span class="json-string">"Test4"</span>,
+                <span class="json-key">"email"</span>:
+                <span class="json-string">"temp4@gmail.com"</span>,
+                <span class="json-key">"role"</span>:
+                <span class="json-string">"user"</span>
+                }, {
+                <span class="json-key">"id"</span>:
+                <span class="json-string"
+                  >"c01af79e-6f71-4598-8142-c9c4adc44419"</span
+                >, <span class="json-key">"name"</span>:
+                <span class="json-string">"Test4"</span>,
+                <span class="json-key">"email"</span>:
+                <span class="json-string">"temp4"</span>,
+                <span class="json-key">"role"</span>:
+                <span class="json-string">"user"</span> } ]
+              </div>
+            </div>
+          </div>
+
+          <!-- Create Task -->
+          <div class="endpoint">
+            <div class="endpoint-header">
+              <div class="endpoint-title">Create New Task</div>
+              <span class="method post">POST</span>
+              <span class="url">http://localhost:8080/task/admin</span>
+            </div>
+            <div class="endpoint-body">
+              <div class="section-title">Request Body:</div>
+              <div class="json-block">
+                { <span class="json-key">"description"</span>:
+                <span class="json-string">"Project Final Test"</span>,
+                <span class="json-key">"status"</span>:
+                <span class="json-string">"Start"</span>,
+                <span class="json-key">"taskName"</span>:
+                <span class="json-string">"Email Testing"</span>,
+                <span class="json-key">"dueDate"</span>:
+                <span class="json-string">"2025-06-15T14:30:00Z"</span>,
+                <span class="json-key">"assignedUsers"</span>: [ {
+                <span class="json-key">"userId"</span>:
+                <span class="json-string"
+                  >"64462888-7540-4373-a02c-03f1023a1e1a"</span
+                >, <span class="json-key">"userName"</span>:
+                <span class="json-string">"Test2"</span>,
+                <span class="json-key">"email"</span>:
+                <span class="json-string">"email2"</span>
+                }, {
+                <span class="json-key">"userId"</span>:
+                <span class="json-string"
+                  >"89517ff0-587f-4e46-a98a-f6db03fa6bc6"</span
+                >, <span class="json-key">"userName"</span>:
+                <span class="json-string">"Test3"</span>,
+                <span class="json-key">"email"</span>:
+                <span class="json-string">"email3"</span>
+                } ],
+                <span class="json-key">"workflowId"</span>:
+                <span class="json-string"
+                  >"workflow-39bb8c39-d2ab-44aa-a205-8e25bf161c84"</span
+                >
+                }
+              </div>
+
+              <div class="section-title">Response:</div>
+              <div class="json-block">
+                { <span class="json-key">"taskId"</span>:
+                <span class="json-string">"683d4aca7dda4e6e8e85e529"</span>,
+                <span class="json-key">"description"</span>:
+                <span class="json-string">"Project Final Test"</span>,
+                <span class="json-key">"status"</span>:
+                <span class="json-string">"Start"</span>,
+                <span class="json-key">"dueDate"</span>:
+                <span class="json-string">"2025-06-15 20:00:00"</span>,
+                <span class="json-key">"assignedUsers"</span>: [ {
+                <span class="json-key">"userId"</span>:
+                <span class="json-string"
+                  >"64462888-7540-4373-a02c-03f1023a1e1a"</span
+                >, <span class="json-key">"userName"</span>:
+                <span class="json-string">"Test2"</span>,
+                <span class="json-key">"email"</span>:
+                <span class="json-string">"email"</span>
+                }, {
+                <span class="json-key">"userId"</span>:
+                <span class="json-string"
+                  >"89517ff0-587f-4e46-a98a-f6db03fa6bc6"</span
+                >, <span class="json-key">"userName"</span>:
+                <span class="json-string">"Test3"</span>,
+                <span class="json-key">"email"</span>:
+                <span class="json-string">"email"</span>
+                } ],
+                <span class="json-key">"createdAt"</span>:
+                <span class="json-string">"2025-06-02 12:25:06"</span>,
+                <span class="json-key">"updatedAt"</span>:
+                <span class="json-string">"2025-06-02 12:25:06"</span>,
+                <span class="json-key">"workflowId"</span>:
+                <span class="json-string"
+                  >"workflow-065da3e5-3de5-4448-83f7-436b1881f314"</span
+                >, <span class="json-key">"unavailableUsers"</span>: [],
+                <span class="json-key">"taskName"</span>:
+                <span class="json-string">"Email Testing"</span>,
+                <span class="json-key">"adminEmail"</span>:
+                <span class="json-string">"email"</span> }
+              </div>
+            </div>
+          </div>
+
+          <!-- Update Task Admin -->
+          <div class="endpoint">
+            <div class="endpoint-header">
+              <div class="endpoint-title">Update Task (Admin)</div>
+              <span class="method put">PUT</span>
+              <span class="url">http://localhost:8080/task/admin/{taskId}</span>
+            </div>
+            <div class="endpoint-body">
+              <div class="section-title">Request Body:</div>
+              <div class="json-block">
+                { <span class="json-key">"status"</span>:
+                <span class="json-string">"Completed"</span>,
+                <span class="json-key">"description"</span>:
+                <span class="json-string">"Added second user too"</span>,
+                <span class="json-key">"dueDate"</span>:
+                <span class="json-string">"2025-06-29T14:30:00Z"</span>,
+                <span class="json-key">"assignedUsers"</span>: [ {
+                <span class="json-key">"userId"</span>:
+                <span class="json-string"
+                  >"464462888-7540-4373-a02c-03f1023a1e1a"</span
+                >, <span class="json-key">"userName"</span>:
+                <span class="json-string">"Test2"</span>,
+                <span class="json-key">"email"</span>:
+                <span class="json-string">"email2"</span>
+                }, {
+                <span class="json-key">"userId"</span>:
+                <span class="json-string"
+                  >"89517ff0-587f-4e46-a98a-f6db03fa6bc6"</span
+                >, <span class="json-key">"userName"</span>:
+                <span class="json-string">"Test3"</span>,
+                <span class="json-key">"email"</span>:
+                <span class="json-string">"email3"</span> } ] }
+              </div>
+
+              <div class="section-title">Response:</div>
+              <div class="json-block">
+                { <span class="json-key">"taskId"</span>:
+                <span class="json-string">"683cc495566d8425c0b18b4f"</span>,
+                <span class="json-key">"description"</span>:
+                <span class="json-string">"Added second user too"</span>,
+                <span class="json-key">"status"</span>:
+                <span class="json-string">"Completed"</span>,
+                <span class="json-key">"dueDate"</span>:
+                <span class="json-string">"2025-06-29 20:00:00"</span>,
+                <span class="json-key">"assignedUsers"</span>: [ {
+                <span class="json-key">"userId"</span>:
+                <span class="json-string"
+                  >"464462888-7540-4373-a02c-03f1023a1e1a"</span
+                >, <span class="json-key">"userName"</span>:
+                <span class="json-string">"Test2"</span>,
+                <span class="json-key">"email"</span>:
+                <span class="json-string">"email"</span>
+                }, {
+                <span class="json-key">"userId"</span>:
+                <span class="json-string"
+                  >"89517ff0-587f-4e46-a98a-f6db03fa6bc6"</span
+                >, <span class="json-key">"userName"</span>:
+                <span class="json-string">"Test3"</span>,
+                <span class="json-key">"email"</span>:
+                <span class="json-string">"email"</span>
+                } ],
+                <span class="json-key">"createdAt"</span>:
+                <span class="json-string">"2025-06-02 02:52:29"</span>,
+                <span class="json-key">"updatedAt"</span>:
+                <span class="json-string">"2025-06-02 12:32:40"</span>,
+                <span class="json-key">"workflowId"</span>:
+                <span class="json-string"
+                  >"workflow-39bb8c39-d2ab-44aa-a205-8e25bf161c84"</span
+                >, <span class="json-key">"unavailableUsers"</span>:
+                <span class="json-boolean">null</span>,
+                <span class="json-key">"taskName"</span>:
+                <span class="json-string">"Email Testing"</span>,
+                <span class="json-key">"adminEmail"</span>:
+                <span class="json-string">"rinky.zafar@gmail.com"</span> }
+              </div>
+            </div>
+          </div>
+
+          <!-- Get Assigned Users -->
+          <div class="endpoint">
+            <div class="endpoint-header">
+              <div class="endpoint-title">Get Assigned Users</div>
+              <span class="method get">GET</span>
+              <span class="url">http://localhost:8080/task/admin/assigned</span>
+            </div>
+            <div class="endpoint-body">
+              <div class="section-title">Response:</div>
+              <div class="json-block">
+                [ { <span class="json-key">"id"</span>:
+                <span class="json-string"
+                  >"2211578c-15e5-410a-9aac-1fc2827d1db0"</span
+                >, <span class="json-key">"name"</span>:
+                <span class="json-string">"Test4"</span>,
+                <span class="json-key">"email"</span>:
+                <span class="json-string">"temp4@gmail.com"</span>,
+                <span class="json-key">"role"</span>:
+                <span class="json-string">"user"</span> } ]
+              </div>
+            </div>
+          </div>
+
+          <!-- Get Free Users -->
+          <div class="endpoint">
+            <div class="endpoint-header">
+              <div class="endpoint-title">Get Free Users</div>
+              <span class="method get">GET</span>
+              <span class="url">http://localhost:8080/task/admin/free</span>
+            </div>
+            <div class="endpoint-body">
+              <div class="section-title">Response:</div>
+              <div class="json-block">
+                [ { <span class="json-key">"id"</span>:
+                <span class="json-string"
+                  >"2211578c-15e5-410a-9aac-1fc2827d1db0"</span
+                >, <span class="json-key">"name"</span>:
+                <span class="json-string">"Test4"</span>,
+                <span class="json-key">"email"</span>:
+                <span class="json-string">"temp4@gmail.com"</span>,
+                <span class="json-key">"role"</span>:
+                <span class="json-string">"user"</span> } ]
+              </div>
+            </div>
+          </div>
+
+           <!-- Get Single Task -->
+          <div class="endpoint">
+            <div class="endpoint-header">
+              <div class="endpoint-title">Get Single Task</div>
+              <span class="method get">GET</span>
+              <span class="url">http://localhost:8080/task/admin/{taskId}</span>
+            </div>
+            <div class="endpoint-body">
+              <div class="section-title">Response:</div>
+              <div class="json-block">
+                { <span class="json-key">"taskId"</span>:
+                <span class="json-string">"683d4aca7dda4e6e8e85e529"</span>,
+                <span class="json-key">"description"</span>:
+                <span class="json-string">"Project Final Test"</span>,
+                <span class="json-key">"status"</span>:
+                <span class="json-string">"Start"</span>,
+                <span class="json-key">"dueDate"</span>:
+                <span class="json-string">"2025-06-15 20:00:00"</span>,
+                <span class="json-key">"assignedUsers"</span>: [ {
+                <span class="json-key">"userId"</span>:
+                <span class="json-string"
+                  >"64462888-7540-4373-a02c-03f1023a1e1a"</span
+                >, <span class="json-key">"userName"</span>:
+                <span class="json-string">"Test2"</span>,
+                <span class="json-key">"email"</span>:
+                <span class="json-string">"zafar.rinky@gmail.com"</span>
+                }, {
+                <span class="json-key">"userId"</span>:
+                <span class="json-string"
+                  >"89517ff0-587f-4e46-a98a-f6db03fa6bc6"</span
+                >, <span class="json-key">"userName"</span>:
+                <span class="json-string">"Test3"</span>,
+                <span class="json-key">"email"</span>:
+                <span class="json-string">"waseeqzafar04@gmail.com"</span>
+                } ],
+                <span class="json-key">"createdAt"</span>:
+                <span class="json-string">"2025-06-02 12:25:06"</span>,
+                <span class="json-key">"updatedAt"</span>:
+                <span class="json-string">"2025-06-02 12:25:06"</span>,
+                <span class="json-key">"workflowId"</span>:
+                <span class="json-string"
+                  >"workflow-065da3e5-3de5-4448-83f7-436b1881f314"</span
+                >, <span class="json-key">"unavailableUsers"</span>:
+                <span class="json-boolean">null</span>,
+                <span class="json-key">"taskName"</span>:
+                <span class="json-string">"Email Testing"</span>,
+                <span class="json-key">"adminEmail"</span>:
+                <span class="json-string">"rinky.zafar@gmail.com"</span> }
+              </div>
+            </div>
+          </div>
+
+          <!-- Get All Tasks -->
+          <div class="endpoint">
+            <div class="endpoint-header">
+              <div class="endpoint-title">Get All Tasks</div>
+              <span class="method get">GET</span>
+              <span class="url">http://localhost:8080/task/admin</span>
+            </div>
+            <div class="endpoint-body">
+              <div class="section-title">Response:</div>
+              <div class="json-block">
+                [ { <span class="json-key">"taskId"</span>:
+                <span class="json-string">"683d4aca7dda4e6e8e85e529"</span>,
+                <span class="json-key">"description"</span>:
+                <span class="json-string">"Project Final Test"</span>,
+                <span class="json-key">"status"</span>:
+                <span class="json-string">"Start"</span>,
+                <span class="json-key">"dueDate"</span>:
+                <span class="json-string">"2025-06-15 20:00:00"</span>,
+                <span class="json-key">"assignedUsers"</span>: [ {
+                <span class="json-key">"userId"</span>:
+                <span class="json-string"
+                  >"64462888-7540-4373-a02c-03f1023a1e1a"</span
+                >, <span class="json-key">"userName"</span>:
+                <span class="json-string">"Test2"</span>,
+                <span class="json-key">"email"</span>:
+                <span class="json-string">"zafar.rinky@gmail.com"</span>
+                }, {
+                <span class="json-key">"userId"</span>:
+                <span class="json-string"
+                  >"89517ff0-587f-4e46-a98a-f6db03fa6bc6"</span
+                >, <span class="json-key">"userName"</span>:
+                <span class="json-string">"Test3"</span>,
+                <span class="json-key">"email"</span>:
+                <span class="json-string">"waseeqzafar04@gmail.com"</span>
+                } ],
+                <span class="json-key">"createdAt"</span>:
+                <span class="json-string">"2025-06-02 12:25:06"</span>,
+                <span class="json-key">"updatedAt"</span>:
+                <span class="json-string">"2025-06-02 12:25:06"</span>,
+                <span class="json-key">"workflowId"</span>:
+                <span class="json-string"
+                  >"workflow-065da3e5-3de5-4448-83f7-436b1881f314"</span
+                >, <span class="json-key">"unavailableUsers"</span>:
+                <span class="json-boolean">null</span>,
+                <span class="json-key">"taskName"</span>:
+                <span class="json-string">"Email Testing"</span>,
+                <span class="json-key">"adminEmail"</span>:
+                <span class="json-string">"rinky.zafar@gmail.com"</span> } ]
+              </div>
+            </div>
+          </div>
+
+          <!-- Delete Task -->
+          <div class="endpoint">
+            <div class="endpoint-header">
+              <div class="endpoint-title">Delete Task</div>
+              <span class="method delete">DELETE</span>
+              <span class="url">http://localhost:8080/task/admin/{taskId}</span>
+            </div>
+            <div class="endpoint-body">
+              <div class="section-title">Responses:</div>
+              <span class="response-status status-200">204 No Content</span>
+              <span class="response-status status-404">404 Not Found</span>
+              <div class="json-block">
+                { <span class="json-key">"message"</span>:
+                <span class="json-string">"Task not found"</span> }
+              </div>
+            </div>
+          </div>
+
+          <h3 style="color: #28a745; margin: 30px 0 20px 0; font-size: 1.4em">
+            👤 User Specific Endpoints
+          </h3>
+
+          <!-- Get User Tasks -->
+          <div class="endpoint">
+            <div class="endpoint-header">
+              <div class="endpoint-title">Get User Tasks</div>
+              <span class="method get">GET</span>
+              <span class="url">http://localhost:8080/task/user</span>
+            </div>
+            <div class="endpoint-body">
+              <div class="section-title">Response:</div>
+              <div class="json-block">
+                [ { <span class="json-key">"taskId"</span>:
+                <span class="json-string">"683d4aca7dda4e6e8e85e529"</span>,
+                <span class="json-key">"description"</span>:
+                <span class="json-string">"Project Final Test"</span>,
+                <span class="json-key">"status"</span>:
+                <span class="json-string">"Start"</span>,
+                <span class="json-key">"dueDate"</span>:
+                <span class="json-string">"2025-06-15 20:00:00"</span>,
+                <span class="json-key">"assignedUsers"</span>: [ {
+                <span class="json-key">"userId"</span>:
+                <span class="json-string"
+                  >"64462888-7540-4373-a02c-03f1023a1e1a"</span
+                >, <span class="json-key">"userName"</span>:
+                <span class="json-string">"Test2"</span>,
+                <span class="json-key">"email"</span>:
+                <span class="json-string">"zafar.rinky@gmail.com"</span>
+                }, {
+                <span class="json-key">"userId"</span>:
+                <span class="json-string"
+                  >"89517ff0-587f-4e46-a98a-f6db03fa6bc6"</span
+                >, <span class="json-key">"userName"</span>:
+                <span class="json-string">"Test3"</span>,
+                <span class="json-key">"email"</span>:
+                <span class="json-string">"waseeqzafar04@gmail.com"</span>
+                } ],
+                <span class="json-key">"createdAt"</span>:
+                <span class="json-string">"2025-06-02 12:25:06"</span>,
+                <span class="json-key">"updatedAt"</span>:
+                <span class="json-string">"2025-06-02 12:25:06"</span>,
+                <span class="json-key">"workflowId"</span>:
+                <span class="json-string"
+                  >"workflow-065da3e5-3de5-4448-83f7-436b1881f314"</span
+                >, <span class="json-key">"taskName"</span>:
+                <span class="json-string">"Email Testing"</span> } ]
+              </div>
+            </div>
+          </div>
+
+          <!-- Update Task User -->
+          <div class="endpoint">
+            <div class="endpoint-header">
+              <div class="endpoint-title">Update Task (User)</div>
+              <span class="method put">PUT</span>
+              <span class="url">http://localhost:8080/task/user/{taskId}</span>
+            </div>
+            <div class="endpoint-body">
+              <div class="section-title">Request Body:</div>
+              <div class="json-block">
+                { <span class="json-key">"status"</span>:
+                <span class="json-string">"Completed"</span>,
+                <span class="json-key">"description"</span>:
+                <span class="json-string">"final mail check"</span> }
+              </div>
+
+              <div class="section-title">Response:</div>
+              <div class="json-block">
+                { <span class="json-key">"taskId"</span>:
+                <span class="json-string">"683d4aca7dda4e6e8e85e529"</span>,
+                <span class="json-key">"description"</span>:
+                <span class="json-string">"final mail check"</span>,
+                <span class="json-key">"status"</span>:
+                <span class="json-string">"Completed"</span>,
+                <span class="json-key">"dueDate"</span>:
+                <span class="json-string">"2025-06-15 20:00:00"</span>,
+                <span class="json-key">"assignedUsers"</span>: [ {
+                <span class="json-key">"userId"</span>:
+                <span class="json-string"
+                  >"64462888-7540-4373-a02c-03f1023a1e1a"</span
+                >, <span class="json-key">"userName"</span>:
+                <span class="json-string">"Test2"</span>,
+                <span class="json-key">"email"</span>:
+                <span class="json-string">"email"</span>
+                }, {
+                <span class="json-key">"userId"</span>:
+                <span class="json-string"
+                  >"89517ff0-587f-4e46-a98a-f6db03fa6bc6"</span
+                >, <span class="json-key">"userName"</span>:
+                <span class="json-string">"Test3"</span>,
+                <span class="json-key">"email"</span>:
+                <span class="json-string">"email"</span>
+                } ],
+                <span class="json-key">"createdAt"</span>:
+                <span class="json-string">"2025-06-02 12:25:06"</span>,
+                <span class="json-key">"updatedAt"</span>:
+                <span class="json-string">"2025-06-02 12:25:06"</span>,
+                <span class="json-key">"workflowId"</span>:
+                <span class="json-string"
+                  >"workflow-065da3e5-3de5-4448-83f7-436b1881f314"</span
+                >, <span class="json-key">"taskName"</span>:
+                <span class="json-string">"Email Testing"</span> }
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Workflow Service -->
+      <div class="service-section" id="workflow">
+        <div class="service-header">🔄 Workflow Service</div>
+        <div class="service-content">
+          <div class="auth-info">
+            <strong>Authentication Required:</strong> Pass accessToken as Bearer
+            token in all requests<br />
+            <strong>Admin Only:</strong> All workflow endpoints are restricted
+            to admin users<br />
+            <strong>Response Codes:</strong> 200 OK, 401 Unauthorized, 404 Not
+            Found
+          </div>
+
+          <!-- Create Workflow -->
+          <div class="endpoint">
+            <div class="endpoint-header">
+              <div class="endpoint-title">Create Workflow</div>
+              <span class="method post">POST</span>
+              <span class="url">http://localhost:8080/workflow</span>
+            </div>
+            <div class="endpoint-body">
+              <div class="section-title">Response:</div>
+              <div class="json-block">
+                { <span class="json-key">"workflowId"</span>:
+                <span class="json-string"
+                  >"workflow-065da3e5-3de5-4448-83f7-436b1881f314"</span
+                >, <span class="json-key">"createdAt"</span>:
+                <span class="json-number">1748846546078</span>,
+                <span class="json-key">"updatedAt"</span>:
+                <span class="json-number">1748846546078</span>,
+                <span class="json-key">"completionPercentage"</span>:
+                <span class="json-number">0</span> }
+              </div>
+            </div>
+          </div>
+
+          <!-- Get All Workflows -->
+          <div class="endpoint">
+            <div class="endpoint-header">
+              <div class="endpoint-title">Get All Workflows</div>
+              <span class="method get">GET</span>
+              <span class="url">http://localhost:8080/workflow</span>
+            </div>
+            <div class="endpoint-body">
+              <div class="section-title">Response:</div>
+              <div class="json-block">
+                [ { <span class="json-key">"id"</span>:
+                <span class="json-string">"683cb94a60fc40c1c0713905"</span>,
+                <span class="json-key">"workflowId"</span>:
+                <span class="json-string"
+                  >"workflow-e1999340-9f10-4be1-af68-5d66e9cc6067"</span
+                >, <span class="json-key">"createdAt"</span>:
+                <span class="json-number">1748810058240</span>,
+                <span class="json-key">"updatedAt"</span>:
+                <span class="json-number">1748810269081</span>,
+                <span class="json-key">"tasks"</span>: [ {
+                <span class="json-key">"taskId"</span>:
+                <span class="json-string">"683cb9a1e0a06cddff213948"</span>,
+                <span class="json-key">"taskName"</span>:
+                <span class="json-string">"Email Testing"</span>,
+                <span class="json-key">"assignedUsers"</span>: [ {
+                <span class="json-key">"userId"</span>:
+                <span class="json-string"
+                  >"464462888-7540-4373-a02c-03f1023a1e1a"</span
+                >, <span class="json-key">"userName"</span>:
+                <span class="json-string">"Test2"</span>,
+                <span class="json-key">"email"</span>:
+                <span class="json-string">"zafar.rinky@gmail.com"</span>
+                }, {
+                <span class="json-key">"userId"</span>:
+                <span class="json-string"
+                  >"89517ff0-587f-4e46-a98a-f6db03fa6bc6"</span
+                >, <span class="json-key">"userName"</span>:
+                <span class="json-string">"Test3"</span>,
+                <span class="json-key">"email"</span>:
+                <span class="json-string">"waseeqzafar04@gmail.com"</span>
+                } ],
+                <span class="json-key">"workflowId"</span>:
+                <span class="json-string"
+                  >"workflow-e1999340-9f10-4be1-af68-5d66e9cc6067"</span
+                >, <span class="json-key">"eventType"</span>:
+                <span class="json-boolean">null</span>,
+                <span class="json-key">"taskStatus"</span>:
+                <span class="json-string">"Completed"</span>,
+                <span class="json-key">"timestamp"</span>:
+                <span class="json-number">0</span>,
+                <span class="json-key">"adminEmail"</span>:
+                <span class="json-string">"adminEmail"</span>
+                } ],
+                <span class="json-key">"completionPercentage"</span>:
+                <span class="json-number">100</span>,
+                <span class="json-key">"adminEmail"</span>:
+                <span class="json-string">"adminEmail"</span> } ]
+              </div>
+            </div>
+          </div>
+
+          <!-- Get Specific Workflow -->
+          <div class="endpoint">
+            <div class="endpoint-header">
+              <div class="endpoint-title">Get Specific Workflow</div>
+              <span class="method get">GET</span>
+              <span class="url"
+                >http://localhost:8080/workflow/{workflowId}</span
+              >
+            </div>
+            <div class="endpoint-body">
+              <div class="section-title">Response:</div>
+              <div class="json-block">
+                { <span class="json-key">"id"</span>:
+                <span class="json-string">"683cb94a60fc40c1c0713905"</span>,
+                <span class="json-key">"workflowId"</span>:
+                <span class="json-string"
+                  >"workflow-e1999340-9f10-4be1-af68-5d66e9cc6067"</span
+                >, <span class="json-key">"createdAt"</span>:
+                <span class="json-number">1748810058240</span>,
+                <span class="json-key">"updatedAt"</span>:
+                <span class="json-number">1748810269081</span>,
+                <span class="json-key">"tasks"</span>: [ {
+                <span class="json-key">"taskId"</span>:
+                <span class="json-string">"683cb9a1e0a06cddff213948"</span>,
+                <span class="json-key">"taskName"</span>:
+                <span class="json-string">"Email Testing"</span>,
+                <span class="json-key">"assignedUsers"</span>: [ {
+                <span class="json-key">"userId"</span>:
+                <span class="json-string"
+                  >"464462888-7540-4373-a02c-03f1023a1e1a"</span
+                >, <span class="json-key">"userName"</span>:
+                <span class="json-string">"Test2"</span>,
+                <span class="json-key">"email"</span>:
+                <span class="json-string">"zafar.rinky@gmail.com"</span>
+                }, {
+                <span class="json-key">"userId"</span>:
+                <span class="json-string"
+                  >"89517ff0-587f-4e46-a98a-f6db03fa6bc6"</span
+                >, <span class="json-key">"userName"</span>:
+                <span class="json-string">"Test3"</span>,
+                <span class="json-key">"email"</span>:
+                <span class="json-string">"waseeqzafar04@gmail.com"</span>
+                } ],
+                <span class="json-key">"workflowId"</span>:
+                <span class="json-string"
+                  >"workflow-e1999340-9f10-4be1-af68-5d66e9cc6067"</span
+                >, <span class="json-key">"eventType"</span>:
+                <span class="json-boolean">null</span>,
+                <span class="json-key">"taskStatus"</span>:
+                <span class="json-string">"Completed"</span>,
+                <span class="json-key">"timestamp"</span>:
+                <span class="json-number">0</span>,
+                <span class="json-key">"adminEmail"</span>:
+                <span class="json-string">"adminEmail"</span>
+                } ],
+                <span class="json-key">"completionPercentage"</span>:
+                <span class="json-number">100</span>,
+                <span class="json-key">"adminEmail"</span>:
+                <span class="json-string">"adminEmail"</span> }
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
