@@ -123,10 +123,10 @@ SWENS addresses these challenges through:
 git clone https://github.com/Waseeq-Zafar/S.W.E.N.S.git
 cd S.W.E.N.S
 
-<hr style="width:30%; margin:auto; border:0.5px solid lightgray;" />
+<hr style="width:10%; margin:auto; border:0.5px solid lightgray;" />
 
 
-#### 2. Build services
+### 2. Build services
 mvn clean install
 🔧 Additional Configuration (One-Time Setup After Build)
 After running the build, perform the following steps for each of the following services:
@@ -183,10 +183,11 @@ Replace "email-address-here" with your actual sender email address.
 📨 This is the email that will appear as the From field when a user receives workflow-related notifications.
 
 
-<hr style="width:30%; margin:auto; border:0.5px solid lightgray;" />
+<hr style="width:10%; margin:auto; border:0.5px solid lightgray;" />
 
 
-#### 3. Start the backend server by writing following command from the main directory of your project which is S.W.E.N.S and look for docker-compose.yml file present there, then run following command
+### 3. Start the backend server
+from the parent directory where docker-compose.yml located
 docker-compose up --build
 
 ---
