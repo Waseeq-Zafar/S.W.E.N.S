@@ -119,11 +119,11 @@ SWENS addresses these challenges through:
 ### Installation
 
 
-# 1. Clone repository
+### 1. Clone repository
 git clone https://github.com/Waseeq-Zafar/S.W.E.N.S.git
 cd S.W.E.N.S
 
-# 2. Build services
+### 2. Build services
 mvn clean install
 🔧 Additional Configuration (One-Time Setup After Build)
 After running the build, perform the following steps for each of the following services:
@@ -181,7 +181,7 @@ Replace "email-address-here" with your actual sender email address.
 
 
 
-# 3. Start the backend server by writing following command from main directory of your project which is S.W.E.N.S and look for docker-compose.yml file present there, then run following command
+### 3. Start the backend server by writing following command from main directory of your project which is S.W.E.N.S and look for docker-compose.yml file present there, then run following command
 docker-compose up --build
 
 ---
