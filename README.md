@@ -196,7 +196,7 @@ docker-compose up --build
 ## 📚 API Documentation
 ### For complete API specifications and interactive testing:
 
-[➡️ API Documentation][(https://waseeq-zafar.github.io/S.W.E.N.S/)](https://waseeq-zafar.github.io/S.W.E.N.S/)
+[➡️ API Documentation](https://waseeq-zafar.github.io/S.W.E.N.S/)
 
 
 ✨ Key Features
