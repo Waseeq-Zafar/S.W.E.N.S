@@ -19,6 +19,7 @@ public class RoleFilterGatewayFilterFactory extends AbstractGatewayFilterFactory
     @Override
     public GatewayFilter apply(Config config) {
         return (exchange, chain) -> {
+
             List<String> allowedRoles = Arrays.stream(config.requiredRole.split(","))
                     .map(String::toLowerCase)
                     .toList();
