@@ -28,7 +28,7 @@ spring:
             - name: JwtValidation
             - name: RoleFilter
               args:
-                requiredRole: USER,ADMIN   # You can keep both roles if both can access user endpoints, or just USER
+                requiredRole: USER,ADMIN
 
         - id: task-service-admin-access
           uri: http://task-service:6000
@@ -40,7 +40,6 @@ spring:
               args:
                 requiredRole: ADMIN
 
-
         - id: workflow-service
           uri: http://workflow-service:7000
           predicates:
@@ -50,6 +49,21 @@ spring:
             - name: RoleFilter
               args:
                 requiredRole: ADMIN
+
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:5173"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
 
 auth:
   service:
