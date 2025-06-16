@@ -196,8 +196,8 @@ docker-compose up --build
 ## 📚 API Documentation
 ### For complete API specifications and interactive testing:
 
-➡️ Visit the API_DOCS folder and run the api.html file
-📎 API Documentation
+[➡️ API Documentation](https://waseeq-zafar.github.io/S.W.E.N.S/)
+
 
 ✨ Key Features
 Event-driven architecture – Kafka-based real-time communication
