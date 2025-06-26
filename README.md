@@ -115,11 +115,13 @@ SWENS addresses these challenges through:
 - PostgreSQL
 - Redis
 - gRPC
+- Node.js (v18+)
+- npm
 
 ### Installation
 
 
-#### 1. Clone repository
+#### Clone repository
 git clone https://github.com/Waseeq-Zafar/S.W.E.N.S.git
 cd S.W.E.N.S
 
@@ -127,7 +129,21 @@ cd S.W.E.N.S
 ---
 
 
-### 2. Build services
+### Frontend
+cd frontend
+npm install
+npm run dev
+
+
+---
+
+
+### Backend
+
+
+---
+
+### 1. Build 
 mvn clean install
 🔧 Additional Configuration (One-Time Setup After Build)
 After running the build, perform the following steps for each of the following services:
@@ -187,7 +203,7 @@ Replace "email-address-here" with your actual sender email address.
 ---
 
 
-### 3. Start the backend server
+### 2. Start the backend server
 from the parent directory where docker-compose.yml located
 docker-compose up --build
 
