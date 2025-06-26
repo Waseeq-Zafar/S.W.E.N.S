@@ -130,8 +130,11 @@ cd S.W.E.N.S
 
 
 ### Frontend
+
 cd frontend
+
 npm install
+
 npm run dev
 
 
