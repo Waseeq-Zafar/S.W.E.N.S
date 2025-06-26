@@ -1,0 +1,70 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      default-filters:
+        - PreserveHostHeader
+      routes:
+        - id: auth-service
+          uri: http://auth-service:3000
+          predicates:
+            - Path=/auth/**
+
+        - id: user-service
+          uri: http://user-service:4000
+          predicates:
+            - Path=/users/**
+
+        - id: task-service-user-access
+          uri: http://task-service:6000
+          predicates:
+            - Path=/task/user/**
+          filters:
+            - name: JwtValidation
+            - name: RoleFilter
+              args:
+                requiredRole: USER,ADMIN
+
+        - id: task-service-admin-access
+          uri: http://task-service:6000
+          predicates:
+            - Path=/task/admin/**
+          filters:
+            - name: JwtValidation
+            - name: RoleFilter
+              args:
+                requiredRole: ADMIN
+
+        - id: workflow-service
+          uri: http://workflow-service:7000
+          predicates:
+            - Path=/workflow/**
+          filters:
+            - name: JwtValidation
+            - name: RoleFilter
+              args:
+                requiredRole: ADMIN
+
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:5173"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+
+auth:
+  service:
+    url: http://auth-service:3000

@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package com.swens.events;
+
+option java_package = "com.swens.events";
+option java_outer_classname = "TaskEventProto";
+
+message AssignedUser {
+  string userId = 1;
+  string userName = 2;
+  string email = 3;
+}
+
+message TaskEvent {
+  string taskId = 1;
+  string taskName = 2;
+  repeated AssignedUser assignedUsers = 3; // ✅ new field
+  string eventType = 4;
+  string taskStatus = 5;
+  string workflowId = 6;
+  int64 timestamp = 7;
+  string adminEmail = 8;
+}

@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.swens.grpc";
+option java_outer_classname = "UserServiceProto";
+
+service UserService {
+  rpc GetUsersByRole (RoleRequest) returns (UsersResponse);
+}
+
+
+// Request to get all users by role
+message RoleRequest {
+  string role = 1; // e.g., "admin" or "user"
+}
+
+// Individual user info
+message UserInfo {
+  string id = 1;
+  string name = 2;
+  string email = 3;
+  string role = 4;
+}
+
+// Response with list of users
+message UsersResponse {
+  repeated UserInfo users = 1;
+}
